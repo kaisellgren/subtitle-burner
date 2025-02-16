@@ -40,6 +40,16 @@ async function main() {
     app.dock.setIcon(icon)
   }
 
+  const tray = new Tray(icon)
+  tray.setContextMenu(
+    Menu.buildFromTemplate([
+      {
+        label: 'Exit',
+        click: () => app.quit(),
+      },
+    ]),
+  )
+
   if (process.env.NODE_ENV === 'development') {
     void win.loadURL('http://localhost:5173')
   } else {
