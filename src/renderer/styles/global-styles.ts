@@ -11,11 +11,15 @@ export const GlobalStyle = createGlobalStyle`
   }
   
   body {
-    font-size: 1.6rem;
+    font-size: 1.8rem;
   }
   
   p {
-    font-size: 1.6rem;
+    font-size: 1.8rem;
+  }
+  
+  h1, h2, h3 {
+    color: ${(p) => p.theme.palette.primary.main};
   }
 
   ul {
