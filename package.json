@@ -1,0 +1,40 @@
+{
+  "name": "burn-subs",
+  "version": "1.0.0",
+  "author": "Kai Sellgren <kaisellgren@gmail.com>",
+  "license": "ISC",
+  "type": "commonjs",
+  "scripts": {
+    "main": "NODE_OPTIONS='' electron dist/main/main.js -- --no-sandbox",
+    "dev": "rspack serve",
+    "watcher": "rspack build -w"
+  },
+  "dependencies": {
+    "electron": "34.2.0",
+    "koa": "2.15.4",
+    "koa-bodyparser": "^4.4.1",
+    "koa-router": "13.0.1",
+    "koa-static": "^5.0.0",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "typescript": "5.5.4",
+    "zx": "8.1.4"
+  },
+  "devDependencies": {
+    "@jest/globals": "29.7.0",
+    "@rspack/cli": "1.2.3",
+    "@rspack/core": "1.2.3",
+    "@rspack/dev-server": "^1.0.10",
+    "@types/jest": "29.5.12",
+    "@types/koa": "2.15.0",
+    "@types/koa-router": "7.4.8",
+    "@types/koa-static": "4.0.4",
+    "@types/node": "20.14.8",
+    "@types/react": "^19.0.8",
+    "@types/react-dom": "^19.0.3",
+    "electron-reload": "^2.0.0-alpha.1",
+    "jest": "29.7.0",
+    "prettier": "3.3.3",
+    "tsx": "^4.19.2"
+  }
+}
