@@ -1,5 +1,5 @@
 import React from 'react'
 import { createRoot } from 'react-dom/client'
-import { Application } from './application'
+import { Bootstrap } from './bootstrap'
 
-createRoot(document.body).render(<Application />)
+createRoot(document.body).render(<Bootstrap />)

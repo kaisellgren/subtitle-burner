@@ -36,6 +36,9 @@ function createConfiguration(name: Name): Configuration | null {
     },
     watch: isWatch,
     resolve: {
+      alias: {
+        '@mui/styled-engine': '@mui/styled-engine-sc',
+      },
       extensions: ['.ts', '.tsx', '.js', '.jsx'],
     },
     plugins: getPlugins(name),
