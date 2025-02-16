@@ -2,6 +2,7 @@ import { app, BrowserWindow, ipcMain, Menu, nativeImage, Tray } from 'electron'
 import path from 'node:path'
 import icon64 from './icon/icon-64x64.png'
 import { StateManager } from './state/state-manager'
+import { createMenu } from './menu'
 
 async function main() {
   await app.whenReady()
@@ -25,8 +26,10 @@ async function main() {
     icon,
   })
 
+  createMenu()
+
   win.on('close', async () => {
-    const bounds = win.getBounds();
+    const bounds = win.getBounds()
     await stateManager.write({
       ...state,
       mainWindow: {
@@ -34,7 +37,7 @@ async function main() {
         bounds,
       },
     })
-  });
+  })
 
   if (process.platform === 'linux' && app.dock != null) {
     app.dock.setIcon(icon)
