@@ -19,7 +19,7 @@ async function main() {
     y: state.mainWindow.bounds.y,
     webPreferences: {
       preload: path.join(__dirname, '../preload/preload.js'),
-      nodeIntegration: false,
+      nodeIntegration: true,
       contextIsolation: true,
     },
     icon,
