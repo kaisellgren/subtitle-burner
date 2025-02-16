@@ -1,9 +1,6 @@
 {
   "compilerOptions": {
-    "lib": [
-        "ESNext",
-        "DOM"
-    ],
+    "lib": ["ESNext", "DOM"],
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
     "module": "ESNext",
@@ -11,10 +8,8 @@
     "esModuleInterop": true,
     "noEmit": true,
     "target": "ES2023",
-    "jsx": "react"
+    "jsx": "react",
+    "types": ["node"]
   },
-  "include": [
-    "src/renderer/renderer.tsx",
-    "src/main/main.ts"
-  ]
+  "include": ["src/renderer/renderer.tsx", "src/preload/preload.ts", "src/main/main.ts"]
 }
