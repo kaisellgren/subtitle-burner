@@ -5,6 +5,10 @@ import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles'
 import { ThemeProvider as StyledComponentsThemeProvider } from 'styled-components'
 import { DARK_THEME } from './styles/theme'
 import CssBaseline from '@mui/material/CssBaseline'
+import '@fontsource/roboto/300.css'
+import '@fontsource/roboto/400.css'
+import '@fontsource/roboto/500.css'
+import '@fontsource/roboto/700.css'
 
 export function Bootstrap() {
   return (

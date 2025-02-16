@@ -48,6 +48,9 @@ function createConfiguration(name: Name): Configuration | null {
       electronPreload: name == 'preload',
       electronRenderer: name == 'renderer',
     },
+    experiments: {
+      css: true,
+    }
   }
 }
 
@@ -88,6 +91,15 @@ function getRules(name: Name): RuleSetRule[] {
       },
     },
     type: 'javascript/auto',
+  })
+
+  rules.push({
+    test: /\.css$/,
+    use: [
+      {
+        loader: 'builtin:lightningcss-loader',
+      },
+    ],
   })
 
   rules.push({

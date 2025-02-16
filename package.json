@@ -10,6 +10,7 @@
     "watcher": "rspack build -w"
   },
   "dependencies": {
+    "@fontsource/roboto": "^5.1.1",
     "@mui/material": "^6.4.4",
     "@mui/styled-engine-sc": "^6.4.3",
     "@mui/system": "^6.4.3",
