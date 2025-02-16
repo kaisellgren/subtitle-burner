@@ -1,48 +1,56 @@
-import { app, BrowserWindow, Menu, nativeImage, Tray } from 'electron'
+import { app, BrowserWindow, ipcMain, Menu, nativeImage, Tray } from 'electron'
 import path from 'node:path'
 import icon64 from './icon/icon-64x64.png'
+import { StateManager } from './state/state-manager'
 
-await app.whenReady()
+async function main() {
+  await app.whenReady()
 
-const icon = nativeImage.createFromPath(path.join(__dirname, icon64 as string))
+  const stateManager = new StateManager()
 
-const win = new BrowserWindow({
-  width: 1280,
-  height: 1280,
-  webPreferences: {
-    preload: path.join(__dirname, '../preload/preload.js'),
-    nodeIntegration: false,
-    contextIsolation: true,
-  },
-  icon,
-})
+  const state = await stateManager.read()
 
-win.setProgressBar(0.45, {
-  mode: 'normal',
-})
+  const icon = nativeImage.createFromPath(path.join(__dirname, icon64 as string))
 
-if (process.platform === 'linux' && app.dock != null) {
-  app.dock.setIcon(icon)
-}
-
-const tray = new Tray(icon)
-tray.setContextMenu(
-  Menu.buildFromTemplate([
-    {
-      label: 'Exit',
-      click: () => app.quit(),
+  const win = new BrowserWindow({
+    width: state.mainWindow.bounds.width,
+    height: state.mainWindow.bounds.height,
+    x: state.mainWindow.bounds.x,
+    y: state.mainWindow.bounds.y,
+    webPreferences: {
+      preload: path.join(__dirname, '../preload/preload.js'),
+      nodeIntegration: false,
+      contextIsolation: true,
     },
-  ]),
-)
+    icon,
+  })
 
-if (process.env.NODE_ENV === 'development') {
-  void win.loadURL('http://localhost:5173')
-} else {
-  void win.loadFile(path.join(__dirname, '../renderer/index.html'))
+  win.on('close', async () => {
+    const bounds = win.getBounds();
+    await stateManager.write({
+      ...state,
+      mainWindow: {
+        ...state.mainWindow,
+        bounds,
+      },
+    })
+  });
+
+  if (process.platform === 'linux' && app.dock != null) {
+    app.dock.setIcon(icon)
+  }
+
+  if (process.env.NODE_ENV === 'development') {
+    void win.loadURL('http://localhost:5173')
+  } else {
+    void win.loadFile(path.join(__dirname, '../renderer/index.html'))
+  }
+
+  app.on('window-all-closed', () => {
+    if (process.platform !== 'darwin') {
+      app.quit()
+    }
+  })
 }
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
-})
+void main()
