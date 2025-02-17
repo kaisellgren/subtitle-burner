@@ -1,6 +1,9 @@
-import React from 'react'
-import { Button, Paper, Typography } from '@mui/material'
+import React, { useCallback, useState } from 'react'
+import { Button, List, ListItem, Paper, Typography } from '@mui/material'
 import styled from 'styled-components'
+import { DragAndDrop } from './components/drag-and-drop'
+import { VideoInfo } from '../common/video-info'
+import { Videos } from './videos'
 
 const Container = styled.div`
   display: flex;
@@ -26,15 +29,32 @@ const Description = styled.div`
 `
 
 export function Application() {
+  const [videos, setVideos] = useState<VideoInfo[]>([])
+
+  const onDropFiles = useCallback(
+    async (files) => {
+      const filePaths = files.map(window.electron.getFilePath)
+      const newVideos = await Promise.all(filePaths.map((x) => window.electron.invoke<VideoInfo>('getVideoInfo', x)))
+      setVideos([...videos, ...newVideos])
+    },
+    [videos],
+  )
+
   return (
     <Container>
+      <DragAndDrop onDropFiles={onDropFiles} />
+
       <Header>
         <Typography variant="h2" component="h2">
           Burn subtitles
         </Typography>
         <HeaderButtons>
-          <Button variant="contained">Add files...</Button>
-          <Button variant="contained">Add folder...</Button>
+          <Button variant="outlined" color="secondary">
+            Add files...
+          </Button>
+          <Button variant="outlined" color="secondary">
+            Add folder...
+          </Button>
         </HeaderButtons>
       </Header>
 
@@ -44,6 +64,8 @@ export function Application() {
           is supported.
         </Description>
       </Paper>
+
+      {videos.length > 0 && <Videos videos={videos} />}
     </Container>
   )
 }
