@@ -2,22 +2,22 @@ import { $ } from 'zx'
 import { VideoInfo } from '../../common/video-info'
 import { basename, dirname, extname } from 'node:path'
 import { promises as fs } from 'fs'
-import {  } from 'node:buffer'
+import { createDataUriThumbnail } from './thumbnail'
 
-export async function getVideoInfo(path: string): Promise<VideoInfo> {
-  const stat = await fs.stat(path)
+export async function getVideoInfo(fullPath: string): Promise<VideoInfo> {
+  const stat = await fs.stat(fullPath)
 
   if (!stat.isFile()) {
-    throw new Error(`Expected a file: ${path}`)
+    throw new Error(`Expected a file: ${fullPath}`)
   }
 
-  const result = await $`ffprobe -v quiet -print_format json -show_format -show_streams ${path}`
+  const result = await $`ffprobe -v quiet -print_format json -show_format -show_streams ${fullPath}`
 
   const info = JSON.parse(result.stdout)
 
   const videoTrack = info.streams.find((x) => x.codec_type == 'video')
   if (videoTrack == null) {
-    throw new Error(`Could not find video track for: ${path}`)
+    throw new Error(`Could not find video track for: ${fullPath}`)
   }
 
   const subTracks = info.streams.filter((x) => x.codec_type == 'subtitle')
@@ -25,9 +25,10 @@ export async function getVideoInfo(path: string): Promise<VideoInfo> {
   const durationInSeconds = Math.round(Number(info.format.duration))
 
   return {
-    filename: basename(path),
-    path: dirname(path),
-    extension: extname(path),
+    fullPath,
+    filename: basename(fullPath),
+    path: dirname(fullPath),
+    extension: extname(fullPath),
     sizeInBytes: Number(info.format.size),
     createdAt: stat.ctime,
     formatName: info.format.format_long_name,
@@ -38,6 +39,7 @@ export async function getVideoInfo(path: string): Promise<VideoInfo> {
     width: videoTrack.width,
     height: videoTrack.height,
     aspectRatio: videoTrack.display_aspect_ratio,
+    thumbnail: await createDataUriThumbnail(fullPath, durationInSeconds),
     subtitles: subTracks.map((x) => ({
       language: x.tags.language,
       title: x.tags.title,
@@ -47,10 +49,5 @@ export async function getVideoInfo(path: string): Promise<VideoInfo> {
 
 function parseFrameRate(value: string): number {
   const [a, b] = value.split('/').map(Number)
-  return a / b
-}
-
-export async function getThumbnail(path: string): Promise<string> {
-  const result = await $`ffmpeg -i ${path} -an -vf "thumbnail,scale=320:-1" -frames:v 1 -f image2 pipe:1`
-  return result.buffer().toString('base64url')
+  return Number((a / b).toFixed(2))
 }
