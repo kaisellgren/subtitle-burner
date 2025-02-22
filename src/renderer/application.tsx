@@ -1,5 +1,5 @@
-import React, { useCallback } from 'react'
-import { Button, Paper, Typography } from '@mui/material'
+import React, { useCallback, useState } from 'react'
+import { Button, LinearProgress, Paper, Typography } from '@mui/material'
 import styled from 'styled-components'
 import { DragAndDrop } from './components/drag-and-drop'
 import { VideoInfo } from '../common/video-info'
@@ -30,12 +30,16 @@ const Description = styled.div`
 `
 
 export function Application({ store }: { store: Store }) {
+  const [isAddingFiles, setIsAddingFiles] = useState(false)
+
   const onDropFiles = useCallback(async (files) => {
     const filePaths = files.map(window.electron.getFilePath)
+    setIsAddingFiles(true)
     const videos: VideoInfo[] = await Promise.all(
       filePaths.map((x) => window.electron.invoke<VideoInfo>('getVideoInfo', x)),
     )
     store.videos.push(...videos)
+    setIsAddingFiles(false)
   }, [])
 
   return (
@@ -62,6 +66,8 @@ export function Application({ store }: { store: Store }) {
           is supported.
         </Description>
       </Paper>
+
+      {isAddingFiles && <LinearProgress />}
 
       <Videos store={store} />
     </Container>
