@@ -5,6 +5,9 @@ import { DragAndDrop } from './components/drag-and-drop'
 import { VideoInfo } from '../common/video-info'
 import { Videos } from './videos'
 import { Store } from './store'
+import AttachFileIcon from '@mui/icons-material/AttachFile'
+import FolderIcon from '@mui/icons-material/Folder'
+import SubtitlesIcon from '@mui/icons-material/Subtitles'
 
 const Container = styled.div`
   display: flex;
@@ -51,10 +54,10 @@ export function Application({ store }: { store: Store }) {
           Burn subtitles
         </Typography>
         <HeaderButtons>
-          <Button variant="outlined" color="secondary">
+          <Button variant="outlined" color="secondary" startIcon={<AttachFileIcon />}>
             Add files...
           </Button>
-          <Button variant="outlined" color="secondary">
+          <Button variant="outlined" color="secondary" startIcon={<FolderIcon />}>
             Add folder...
           </Button>
         </HeaderButtons>
