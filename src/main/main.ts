@@ -3,7 +3,7 @@ import path from 'node:path'
 import icon64 from './icon/icon-64x64.png'
 import { StateManager } from './state/state-manager'
 import { createMenu } from './menu'
-import { getThumbnail, getVideoInfo } from './util/video'
+import { getVideoInfo } from './util/video'
 
 async function main() {
   await app.whenReady()
@@ -54,8 +54,7 @@ async function main() {
     ]),
   )
 
-  ipcMain.handle('getVideoInfo', async (_, path) => await getVideoInfo(path))
-  ipcMain.handle('getThumbnail', async (_, path) => await getThumbnail(path))
+  ipcMain.handle('getVideoInfo', async (_, fullPath) => await getVideoInfo(fullPath))
 
   if (process.env.NODE_ENV === 'development') {
     void win.loadURL('http://localhost:5173')

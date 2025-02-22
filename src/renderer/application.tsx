@@ -1,9 +1,10 @@
-import React, { useCallback, useState } from 'react'
-import { Button, List, ListItem, Paper, Typography } from '@mui/material'
+import React, { useCallback } from 'react'
+import { Button, Paper, Typography } from '@mui/material'
 import styled from 'styled-components'
 import { DragAndDrop } from './components/drag-and-drop'
 import { VideoInfo } from '../common/video-info'
 import { Videos } from './videos'
+import { Store } from './store'
 
 const Container = styled.div`
   display: flex;
@@ -28,17 +29,14 @@ const Description = styled.div`
   padding: 1rem;
 `
 
-export function Application() {
-  const [videos, setVideos] = useState<VideoInfo[]>([])
-
-  const onDropFiles = useCallback(
-    async (files) => {
-      const filePaths = files.map(window.electron.getFilePath)
-      const newVideos = await Promise.all(filePaths.map((x) => window.electron.invoke<VideoInfo>('getVideoInfo', x)))
-      setVideos([...videos, ...newVideos])
-    },
-    [videos],
-  )
+export function Application({ store }: { store: Store }) {
+  const onDropFiles = useCallback(async (files) => {
+    const filePaths = files.map(window.electron.getFilePath)
+    const videos: VideoInfo[] = await Promise.all(
+      filePaths.map((x) => window.electron.invoke<VideoInfo>('getVideoInfo', x)),
+    )
+    store.videos.push(...videos)
+  }, [])
 
   return (
     <Container>
@@ -65,7 +63,7 @@ export function Application() {
         </Description>
       </Paper>
 
-      {videos.length > 0 && <Videos videos={videos} />}
+      <Videos store={store} />
     </Container>
   )
 }

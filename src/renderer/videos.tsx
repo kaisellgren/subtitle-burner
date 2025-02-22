@@ -1,11 +1,12 @@
-import { VideoInfo } from '../common/video-info'
 import { Paper, Typography } from '@mui/material'
 import React from 'react'
 import styled from 'styled-components'
-import { formatDateTime, formatDuration, formatBitRate, formatBytes } from './util/format'
+import { formatBitRate, formatBytes, formatDateTime, formatDuration } from './util/format'
+import { Store } from './store'
+import { useSnapshot } from 'valtio/react'
 
 interface Props {
-  videos: VideoInfo[]
+  store: Store
 }
 
 const Container = styled.div`
@@ -14,7 +15,7 @@ const Container = styled.div`
   gap: 2rem;
 `
 
-const VideoInfo = styled.div`
+const VideoInfoContainer = styled.div`
   padding: 2rem;
 `
 
@@ -37,45 +38,71 @@ const Label = styled.div`
 
 const Value = styled.div``
 
-export function Videos({ videos }: Props) {
+const ThumbnailContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+  align-items: center;
+`
+
+const Thumbnail = styled.div`
+  > img {
+    width: 320px;
+  }
+`
+
+const Info = styled.div``
+
+export function Videos({ store }: Props) {
+  const snap = useSnapshot(store)
+
   return (
     <Container>
-      {videos.map((x, i) => {
+      {snap.videos.map((x, i) => {
         return (
-          <Paper elevation={0}>
-            <VideoInfo key={i}>
-              <Typography variant="h6" component="h6">
-                {x.filename} ({formatBytes(x.sizeInBytes)})
-              </Typography>
-              <Summary>
-                <Details>
-                  <Label>Format (codec):</Label>
-                  <Value>{x.formatName} ({x.videoCodec})</Value>
-                </Details>
-                <Details>
-                  <Label>Duration:</Label>
-                  <Value>{formatDuration(x.durationInSeconds)}</Value>
-                </Details>
-                <Details>
-                  <Label>Frame rate:</Label>
-                  <Value>{x.frameRate} fps</Value>
-                </Details>
-                <Details>
-                  <Label>Bit rate:</Label>
-                  <Value>{formatBitRate(x.bitRate)}</Value>
-                </Details>
-                <Details>
-                  <Label>Resolution:</Label>
-                  <Value>
-                    {x.width}x{x.height} ({x.aspectRatio})
-                  </Value>
-                </Details>
-                <Details>
-                  <Label>Created at:</Label>
-                  <Value>{formatDateTime(x.createdAt)}</Value>
-                </Details>
-              </Summary>
-            </VideoInfo>
+          <Paper elevation={0} key={i}>
+            <VideoInfoContainer>
+              <ThumbnailContainer>
+                <Thumbnail>
+                  <img src={x.thumbnail} alt="" />
+                </Thumbnail>
+                <Info>
+                  <Typography variant="h6" component="h6">
+                    {x.filename} ({formatBytes(x.sizeInBytes)})
+                  </Typography>
+                  <Summary>
+                    <Details>
+                      <Label>Format (codec):</Label>
+                      <Value>
+                        {x.formatName} ({x.videoCodec})
+                      </Value>
+                    </Details>
+                    <Details>
+                      <Label>Duration:</Label>
+                      <Value>{formatDuration(x.durationInSeconds)}</Value>
+                    </Details>
+                    <Details>
+                      <Label>Frame rate:</Label>
+                      <Value>{x.frameRate} fps</Value>
+                    </Details>
+                    <Details>
+                      <Label>Bit rate:</Label>
+                      <Value>{formatBitRate(x.bitRate)}</Value>
+                    </Details>
+                    <Details>
+                      <Label>Resolution:</Label>
+                      <Value>
+                        {x.width}x{x.height} ({x.aspectRatio})
+                      </Value>
+                    </Details>
+                    <Details>
+                      <Label>Created at:</Label>
+                      <Value>{formatDateTime(x.createdAt)}</Value>
+                    </Details>
+                  </Summary>
+                </Info>
+              </ThumbnailContainer>
+            </VideoInfoContainer>
           </Paper>
         )
       })}

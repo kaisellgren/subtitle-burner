@@ -4,6 +4,7 @@ export interface Subtitle {
 }
 
 export interface VideoInfo {
+  fullPath: string
   filename: string
   path: string
   extension: string
@@ -17,5 +18,6 @@ export interface VideoInfo {
   aspectRatio: string
   width: number
   height: number
+  thumbnail: string | null
   subtitles: Subtitle[]
 }

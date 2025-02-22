@@ -9,6 +9,7 @@ import '@fontsource/roboto/300.css'
 import '@fontsource/roboto/400.css'
 import '@fontsource/roboto/500.css'
 import '@fontsource/roboto/700.css'
+import { createStore } from './store'
 
 export function Bootstrap() {
   return (
@@ -16,7 +17,7 @@ export function Bootstrap() {
       <StyledComponentsThemeProvider theme={DARK_THEME}>
         <CssBaseline />
         <GlobalStyle />
-        <Application />
+        <Application store={createStore()} />
       </StyledComponentsThemeProvider>
     </MuiThemeProvider>
   )
