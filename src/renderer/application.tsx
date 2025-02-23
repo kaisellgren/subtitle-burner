@@ -7,7 +7,6 @@ import { Videos } from './videos'
 import { Store } from './store'
 import AttachFileIcon from '@mui/icons-material/AttachFile'
 import FolderIcon from '@mui/icons-material/Folder'
-import SubtitlesIcon from '@mui/icons-material/Subtitles'
 
 const Container = styled.div`
   display: flex;
@@ -35,14 +34,18 @@ const Description = styled.div`
 export function Application({ store }: { store: Store }) {
   const [isAddingFiles, setIsAddingFiles] = useState(false)
 
-  const onDropFiles = useCallback(async (files) => {
-    const filePaths = files.map(window.electron.getFilePath)
+  const addFiles = useCallback(async (filePaths) => {
     setIsAddingFiles(true)
     const videos: VideoInfo[] = await Promise.all(
       filePaths.map((x) => window.electron.invoke<VideoInfo>('getVideoInfo', x)),
     )
     store.videos.push(...videos)
     setIsAddingFiles(false)
+  }, [])
+
+  const onDropFiles = useCallback(async (files) => {
+    const filePaths = files.map(window.electron.getFilePath)
+    await addFiles(filePaths)
   }, [])
 
   return (
