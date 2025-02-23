@@ -5,9 +5,10 @@
   "license": "ISC",
   "type": "commonjs",
   "scripts": {
-    "main": "NODE_OPTIONS='' electron dist/main/main.js -- --no-sandbox",
-    "dev": "rspack serve",
-    "watcher": "rspack build -w"
+    "start": "NODE_OPTIONS='' electron dist/main/main.js -- --no-sandbox",
+    "serve:frontend": "rspack serve",
+    "watch:backend": "rspack build -w",
+    "dev": "concurrently \"npm run serve:frontend\" \"npm run watch:backend\""
   },
   "dependencies": {
     "@fontsource/roboto": "^5.1.1",
@@ -40,6 +41,7 @@
     "@types/node": "20.14.8",
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
+    "concurrently": "^9.1.2",
     "electron-reload": "^2.0.0-alpha.1",
     "jest": "29.7.0",
     "prettier": "3.3.3",
