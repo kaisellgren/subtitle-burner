@@ -1,9 +1,11 @@
 import { Rectangle } from 'electron'
+import { Settings } from '../../common/settings'
 
 export interface State {
   mainWindow: {
     bounds: Rectangle
   }
+  settings: Settings
 }
 
 export const STATE_DEFAULT: State = {
@@ -14,5 +16,8 @@ export const STATE_DEFAULT: State = {
       width: 800,
       height: 600,
     },
-  }
+  },
+  settings: {
+    preferredLanguages: [],
+  },
 }

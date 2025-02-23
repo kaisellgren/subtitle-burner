@@ -10,14 +10,19 @@ import '@fontsource/roboto/400.css'
 import '@fontsource/roboto/500.css'
 import '@fontsource/roboto/700.css'
 import { createStore } from './store'
+import { Settings } from '../common/settings'
 
-export function Bootstrap() {
+interface Props {
+  initialSettings: Settings
+}
+
+export function Bootstrap({ initialSettings }: Props) {
   return (
     <MuiThemeProvider theme={DARK_THEME}>
       <StyledComponentsThemeProvider theme={DARK_THEME}>
         <CssBaseline />
         <GlobalStyle />
-        <Application store={createStore()} />
+        <Application store={createStore(initialSettings)} />
       </StyledComponentsThemeProvider>
     </MuiThemeProvider>
   )

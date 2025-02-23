@@ -55,6 +55,7 @@ async function main() {
   )
 
   ipcMain.handle('getVideoInfo', async (_, fullPath) => await getVideoInfo(fullPath))
+  ipcMain.handle('getSettings', async (_) => state.settings)
 
   if (process.env.NODE_ENV === 'development') {
     void win.loadURL('http://localhost:5173')
