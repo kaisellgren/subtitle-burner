@@ -108,7 +108,10 @@ export function Videos({ store }: Props) {
                     value={config.subtitleId ?? ''}
                     label="Subtitle"
                     onChange={(e: SelectChangeEvent) => {
-                      const storeBurnConfig = store.burnConfigs.find((s) => s.videoId == x.id)
+                      const storeBurnConfig = expectNotNull(
+                        store.burnConfigs.find((s) => s.videoId == x.id),
+                        `Could not find burn config for ${x.id}`,
+                      )
                       storeBurnConfig.subtitleId = e.target.value
                     }}
                   >
