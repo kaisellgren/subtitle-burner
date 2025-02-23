@@ -40,7 +40,21 @@ export function Application({ store }: { store: Store }) {
       filePaths.map((x) => window.electron.invoke<VideoInfo>('getVideoInfo', x)),
     )
     store.videos.push(...videos)
-    store.burnConfigs.push(...videos.map((x) => ({ videoId: x.id, subtitleId: null })))
+    store.burnConfigs.push(
+      ...videos.map((x) => {
+        let subtitleId: string | null = null
+        for (const lang of store.settings.preferredLanguages) {
+          if (subtitleId) {
+            break
+          }
+          subtitleId = x.subtitles.find((s) => s.language == lang)?.id ?? null
+        }
+        return {
+          videoId: x.id,
+          subtitleId,
+        }
+      }),
+    )
     setIsAddingFiles(false)
   }, [])
 
