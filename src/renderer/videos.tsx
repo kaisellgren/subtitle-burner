@@ -67,9 +67,11 @@ export function Videos({ store }: Props) {
               {x.filename} ({formatBytes(x.sizeInBytes)})
             </Typography>
             <VideoContainer>
-              <Thumbnail>
-                <img src={x.thumbnail ?? ''} alt="" />
-              </Thumbnail>
+              {x.thumbnail && (
+                <Thumbnail>
+                  <img src={x.thumbnail} alt="" />
+                </Thumbnail>
+              )}
               <Summary>
                 <Details>
                   <Label>Format (codec):</Label>
