@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { Button, LinearProgress, Paper, Typography } from '@mui/material'
+import { Button, LinearProgress, Paper, Tooltip, Typography } from '@mui/material'
 import styled from 'styled-components'
 import { DragAndDrop } from './components/drag-and-drop'
 import { VideoInfo } from '../common/video-info'
@@ -81,12 +81,16 @@ export function Application({ store }: { store: Store }) {
           Burn subtitles
         </Typography>
         <HeaderButtons>
-          <Button variant="outlined" color="secondary" startIcon={<AttachFileIcon />}>
-            Add files...
-          </Button>
-          <Button variant="outlined" color="secondary" startIcon={<FolderIcon />}>
-            Add folder...
-          </Button>
+          <Tooltip title="Add movies and TV shows">
+            <Button variant="outlined" color="secondary" startIcon={<AttachFileIcon />}>
+              Add files...
+            </Button>
+          </Tooltip>
+          <Tooltip title="Add folder to search for movies and TV shows">
+            <Button variant="outlined" color="secondary" startIcon={<FolderIcon />}>
+              Add folder...
+            </Button>
+          </Tooltip>
         </HeaderButtons>
       </Header>
 
