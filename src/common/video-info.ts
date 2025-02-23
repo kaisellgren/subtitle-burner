@@ -1,9 +1,11 @@
 export interface Subtitle {
+  id: string
   language: string
   title: string
 }
 
 export interface VideoInfo {
+  id: string
   fullPath: string
   filename: string
   path: string

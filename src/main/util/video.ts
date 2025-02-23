@@ -1,8 +1,9 @@
 import { $ } from 'zx'
-import { VideoInfo } from '../../common/video-info'
+import { Subtitle, VideoInfo } from '../../common/video-info'
 import { basename, dirname, extname } from 'node:path'
 import { promises as fs } from 'fs'
 import { createDataUriThumbnail } from './thumbnail'
+import { sha256 } from './hash'
 
 export async function getVideoInfo(fullPath: string): Promise<VideoInfo> {
   const stat = await fs.stat(fullPath)
@@ -25,6 +26,7 @@ export async function getVideoInfo(fullPath: string): Promise<VideoInfo> {
   const durationInSeconds = Math.round(Number(info.format.duration))
 
   return {
+    id: sha256(fullPath),
     fullPath,
     filename: basename(fullPath),
     path: dirname(fullPath),
@@ -40,10 +42,13 @@ export async function getVideoInfo(fullPath: string): Promise<VideoInfo> {
     height: videoTrack.height,
     aspectRatio: videoTrack.display_aspect_ratio,
     thumbnail: await createDataUriThumbnail(fullPath, durationInSeconds),
-    subtitles: subTracks.map((x) => ({
-      language: x.tags.language,
-      title: x.tags.title,
-    })),
+    subtitles: subTracks.map((x, i): Subtitle => {
+      return {
+        id: String(i),
+        language: x.tags.language,
+        title: x.tags.title,
+      }
+    }),
   }
 }
 

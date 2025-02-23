@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Button, LinearProgress, Paper, Typography } from '@mui/material'
 import styled from 'styled-components'
 import { DragAndDrop } from './components/drag-and-drop'
@@ -40,6 +40,7 @@ export function Application({ store }: { store: Store }) {
       filePaths.map((x) => window.electron.invoke<VideoInfo>('getVideoInfo', x)),
     )
     store.videos.push(...videos)
+    store.burnConfigs.push(...videos.map((x) => ({ videoId: x.id, subtitleId: null })))
     setIsAddingFiles(false)
   }, [])
 
