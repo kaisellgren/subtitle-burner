@@ -6,6 +6,7 @@
     "module": "ESNext",
     "moduleResolution": "Node",
     "esModuleInterop": true,
+    "strict": true,
     "noEmit": true,
     "target": "ES2023",
     "jsx": "react",

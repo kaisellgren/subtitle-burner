@@ -68,7 +68,7 @@ export function Videos({ store }: Props) {
             </Typography>
             <VideoContainer>
               <Thumbnail>
-                <img src={x.thumbnail} alt="" />
+                <img src={x.thumbnail ?? ''} alt="" />
               </Thumbnail>
               <Summary>
                 <Details>
