@@ -1,4 +1,4 @@
-import { createTheme } from '@mui/material'
+import { buttonClasses, createTheme } from '@mui/material'
 
 export const DARK_THEME = createTheme({
   palette: {
@@ -20,5 +20,25 @@ export const DARK_THEME = createTheme({
   },
   typography: {
     htmlFontSize: 10,
+  },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          [`&.${buttonClasses.contained}.${buttonClasses.colorPrimary}`]: {
+            backgroundColor: '#9a3100',
+            '&:hover': {
+              backgroundColor: '#bd3a00',
+            },
+          },
+          [`&.${buttonClasses.contained}.${buttonClasses.colorSecondary}`]: {
+            backgroundColor: '#ccc',
+            '&:hover': {
+              backgroundColor: '#ddd',
+            },
+          },
+        },
+      },
+    },
   },
 })
