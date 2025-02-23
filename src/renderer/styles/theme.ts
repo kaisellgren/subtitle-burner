@@ -1,4 +1,4 @@
-import { buttonClasses, createTheme } from '@mui/material'
+import { alertClasses, buttonClasses, createTheme } from '@mui/material'
 
 export const DARK_THEME = createTheme({
   palette: {
@@ -15,6 +15,9 @@ export const DARK_THEME = createTheme({
     text: {
       primary: '#ffffff',
       secondary: '#b0bec5',
+    },
+    info: {
+      main: '#006a9f',
     },
     mode: 'dark',
   },
@@ -36,6 +39,15 @@ export const DARK_THEME = createTheme({
             '&:hover': {
               backgroundColor: '#ddd',
             },
+          },
+        },
+      },
+    },
+    MuiAlert: {
+      styleOverrides: {
+        root: {
+          [`&.${alertClasses.filled}.${alertClasses.colorInfo}`]: {
+            color: '#fff',
           },
         },
       },

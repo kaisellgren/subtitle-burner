@@ -1,10 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { Button, LinearProgress, Paper, Tooltip, Typography } from '@mui/material'
+import { Alert, Button, LinearProgress, Paper, Snackbar, Tooltip, Typography } from '@mui/material'
 import styled from 'styled-components'
 import { DragAndDrop } from './components/drag-and-drop'
 import { VideoInfo } from '../common/video-info'
 import { Videos } from './videos'
 import { Store } from './store'
+import WhatshotIcon from '@mui/icons-material/Whatshot'
 import AttachFileIcon from '@mui/icons-material/AttachFile'
 import FolderIcon from '@mui/icons-material/Folder'
 
@@ -21,6 +22,12 @@ const Header = styled.div`
   display: flex;
   width: 100%;
   justify-content: space-between;
+`
+
+const Footer = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
 `
 
 const HeaderButtons = styled.div`
@@ -42,6 +49,7 @@ const ScrollContainer = styled.div`
 
 export function Application({ store }: { store: Store }) {
   const [isAddingFiles, setIsAddingFiles] = useState(false)
+  const [isBurningStartedMessageShown, setIsBurningStartedMessageShown] = useState(false)
 
   const addFiles = useCallback(async (filePaths) => {
     setIsAddingFiles(true)
@@ -107,7 +115,29 @@ export function Application({ store }: { store: Store }) {
         <Videos store={store} />
       </ScrollContainer>
 
-      <div>Footer</div>
+      <Footer>
+        <Tooltip title="Start burning every video">
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<WhatshotIcon />}
+            onClick={() => setIsBurningStartedMessageShown(true)}
+          >
+            Start burning
+          </Button>
+        </Tooltip>
+      </Footer>
+
+      <Snackbar
+        anchorOrigin={{ horizontal: 'center', vertical: 'top' }}
+        open={isBurningStartedMessageShown}
+        autoHideDuration={3000}
+        onClose={() => setIsBurningStartedMessageShown(false)}
+      >
+        <Alert severity="info" variant="filled" sx={{ width: '100%' }} icon={<WhatshotIcon />}>
+          Subtitle burning has started!
+        </Alert>
+      </Snackbar>
     </Container>
   )
 }
