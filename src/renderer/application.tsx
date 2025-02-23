@@ -12,7 +12,9 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2rem;
-  margin: 2rem;
+  padding: 2rem;
+  height: 100vh;
+  overflow: hidden;
 `
 
 const Header = styled.div`
@@ -29,6 +31,13 @@ const HeaderButtons = styled.div`
 
 const Description = styled.div`
   padding: 1rem;
+`
+
+const ScrollContainer = styled.div`
+  flex: 1;
+  height: 150px;
+  min-height: 0;
+  overflow: auto;
 `
 
 export function Application({ store }: { store: Store }) {
@@ -90,7 +99,11 @@ export function Application({ store }: { store: Store }) {
 
       {isAddingFiles && <LinearProgress />}
 
-      <Videos store={store} />
+      <ScrollContainer>
+        <Videos store={store} />
+      </ScrollContainer>
+
+      <div>Footer</div>
     </Container>
   )
 }
