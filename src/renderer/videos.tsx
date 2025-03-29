@@ -13,7 +13,7 @@ import {
 import React, { ReactElement } from 'react'
 import styled from 'styled-components'
 import { formatBitRate, formatBytes, formatDateTime, formatDuration, formatTimeRemaining } from './util/format'
-import { BurnConfig, Store } from './store'
+import { Store } from './store'
 import { useSnapshot } from 'valtio/react'
 import { expectNotNull } from '../common/objects'
 import { Video } from './video/video'
@@ -71,14 +71,9 @@ export function Videos({ store }: Props) {
   return (
     <Container>
       {snap.videos.map((x) => {
-        const config = expectNotNull(
-          snap.burnConfigs.find((c) => c.videoId == x.id),
-          'Expected burn config',
-        )
-
         return (
           <Paper elevation={0} key={x.id} sx={{ padding: 2 }}>
-            <VideoBlock video={x} config={config} store={store} />
+            <VideoBlock video={x} store={store} />
           </Paper>
         )
       })}
@@ -88,11 +83,10 @@ export function Videos({ store }: Props) {
 
 interface VideoBlockProps {
   video: Video
-  config: BurnConfig
   store: Store
 }
 
-function VideoBlock({ video: x, config, store }: VideoBlockProps): ReactElement {
+function VideoBlock({ video: x, store }: VideoBlockProps): ReactElement {
   return (
     <>
       <Typography variant="h6" component="h6" sx={{ mb: 1 }}>
@@ -170,14 +164,14 @@ function VideoBlock({ video: x, config, store }: VideoBlockProps): ReactElement 
               <InputLabel id={`${x.id}-subtitle`}>Subtitle</InputLabel>
               <Select
                 labelId={`${x.id}-subtitle`}
-                value={config.subtitleId ?? ''}
+                value={x.burnSettings.subtitleId ?? ''}
                 label="Subtitle"
                 onChange={(e: SelectChangeEvent) => {
-                  const storeBurnConfig = expectNotNull(
-                    store.burnConfigs.find((s) => s.videoId == x.id),
+                  const storeBurnSettings = expectNotNull(
+                    store.videos.find((s) => s.id == x.id)?.burnSettings,
                     `Could not find burn config for ${x.id}`,
                   )
-                  storeBurnConfig.subtitleId = e.target.value
+                  storeBurnSettings.subtitleId = e.target.value
                 }}
               >
                 <MenuItem value={''} key="none">

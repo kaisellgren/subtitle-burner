@@ -9,7 +9,6 @@ import WhatshotIcon from '@mui/icons-material/Whatshot'
 import AttachFileIcon from '@mui/icons-material/AttachFile'
 import FolderIcon from '@mui/icons-material/Folder'
 import { BurnSubtitleRequest } from '../common/burn-subtitle-request'
-import { expectNotNull } from '../common/objects'
 import { toVideo } from './video/video'
 import { VideoBurnedEvent } from '../common/video-burned-event'
 import { VideoBurnProgressEvent } from '../common/video-burn-progress-event'
@@ -86,16 +85,12 @@ export function Application({ store }: { store: Store }) {
   const burnSubtitles = useCallback(async () => {
     setIsBurningStartedMessageShown(true)
     for (const video of store.videos) {
-      const burnConfig = expectNotNull(
-        store.burnConfigs.find((x) => x.videoId == video.id),
-        `Expected burn config for video ${video.id}`,
-      )
-      if (burnConfig.subtitleId == null) {
+      if (video.burnSettings.subtitleId == null) {
         continue
       }
       const request: BurnSubtitleRequest = {
         fullPath: video.fullPath,
-        subtitleId: burnConfig.subtitleId,
+        subtitleId: video.burnSettings.subtitleId,
         duration: video.durationInSeconds,
       }
       void window.electron.invoke('burnSubtitle', request)
@@ -107,25 +102,25 @@ export function Application({ store }: { store: Store }) {
 
   const addFiles = useCallback(async (filePaths) => {
     setIsAddingFiles(true)
-    const videos: VideoInfo[] = await Promise.all(
+
+    const videoInfos: VideoInfo[] = await Promise.all(
       filePaths.map((x) => window.electron.invoke<VideoInfo>('getVideoInfo', x)),
     )
-    store.videos.push(...videos.map(toVideo))
-    store.burnConfigs.push(
-      ...videos.map((x) => {
-        let subtitleId: string | null = null
-        for (const lang of store.settings.preferredLanguages) {
-          if (subtitleId) {
-            break
-          }
-          subtitleId = x.subtitles.find((s) => s.language == lang)?.id ?? null
+
+    for (const videoInfo of videoInfos) {
+      const video = toVideo(videoInfo)
+
+      let subtitleId: string | null = null
+      for (const lang of store.settings.preferredLanguages) {
+        if (subtitleId == null) {
+          subtitleId = videoInfo.subtitles.find((s) => s.language == lang)?.id ?? null
         }
-        return {
-          videoId: x.id,
-          subtitleId,
-        }
-      }),
-    )
+      }
+      video.burnSettings.subtitleId = subtitleId
+
+      store.videos.push(video)
+    }
+
     setIsAddingFiles(false)
   }, [])
 
