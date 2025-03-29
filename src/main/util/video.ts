@@ -4,6 +4,7 @@ import { basename, dirname, extname } from 'node:path'
 import { promises as fs } from 'fs'
 import { createDataUriThumbnail } from './thumbnail'
 import { sha256 } from './hash'
+import { createTempFilename } from './fs'
 
 export async function getVideoInfo(fullPath: string): Promise<VideoInfo> {
   const stat = await fs.stat(fullPath)
@@ -50,6 +51,12 @@ export async function getVideoInfo(fullPath: string): Promise<VideoInfo> {
       }
     }),
   }
+}
+
+export async function extractSubtitleToTempFile(fullPath: string, subtitleIndex: number): Promise<string> {
+  const tempFile = createTempFilename('subtitle', '.srt')
+  await $`ffmpeg -i ${fullPath} -map 0:s:${subtitleIndex} ${tempFile}`
+  return tempFile
 }
 
 function parseFrameRate(value: string): number {

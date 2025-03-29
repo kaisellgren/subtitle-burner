@@ -3,7 +3,8 @@ import { $ } from 'zx'
 import { VideoBurnedEvent } from '../common/video-burned-event'
 import { sha256 } from './util/hash'
 import { VideoBurnProgressEvent } from '../common/video-burn-progress-event'
-import { escapeFfmpegArgument, sanitizeFfmpegArgument } from './util/shell'
+import { sanitizeFilenameForFfmpeg } from './util/shell'
+import { extractSubtitleToTempFile } from './util/video'
 
 export class SubtitleBurner {
   constructor(private win: Electron.CrossProcessExports.BrowserWindow) {}
@@ -12,11 +13,12 @@ export class SubtitleBurner {
     const id = sha256(fullPath)
 
     const subtitleIndex = Number(subtitleId)
-    const outputFullPath = `${dirname(fullPath)}/(burned) ${sanitizeFfmpegArgument(basename(fullPath))}`
-    const subtitleArg = `subtitles=${escapeFfmpegArgument(fullPath)}:si=${subtitleIndex}`
+
+    const subtitleFullPath = await extractSubtitleToTempFile(fullPath, subtitleIndex)
+    const outputFullPath = `${dirname(fullPath)}/(burned) ${sanitizeFilenameForFfmpeg(basename(fullPath))}`
 
     const process =
-      $`ffmpeg -i ${fullPath} -vf ${subtitleArg} -c:v libx264 -b:v 5M -preset ultrafast -movflags +faststart -crf 21 -tune film -c:a copy ${outputFullPath}`.quiet()
+      $`ffmpeg -i ${fullPath} -vf subtitles=${subtitleFullPath} -c:v libx264 -b:v 5M -preset ultrafast -movflags +faststart -crf 21 -tune film -c:a copy ${outputFullPath}`.quiet()
 
     process.stderr.on('data', (data) => {
       const output = data.toString()
