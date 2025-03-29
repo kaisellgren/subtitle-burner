@@ -1,4 +1,6 @@
 import {
+  Alert,
+  AlertTitle,
   FormControl,
   InputLabel,
   LinearProgress,
@@ -96,7 +98,17 @@ function VideoBlock({ video: x, config, store }: VideoBlockProps): ReactElement 
       <Typography variant="h6" component="h6" sx={{ mb: 1 }}>
         {x.filename} ({formatBytes(x.sizeInBytes)})
       </Typography>
-      {x.burnStartedAt != null && (
+      {x.burnFailedAt != null && (
+        <>
+          <Alert severity="error">
+            <AlertTitle>Failed to burn subtitle onto video</AlertTitle>
+            <details>
+              <pre>{x.burnError}</pre>
+            </details>
+          </Alert>
+        </>
+      )}
+      {x.burnStartedAt != null && x.burnFailedAt == null && (
         <>
           {x.burnFinishedAt == null && (
             <>

@@ -13,6 +13,7 @@ import { expectNotNull } from '../common/objects'
 import { toVideo } from './video/video'
 import { VideoBurnedEvent } from '../common/video-burned-event'
 import { VideoBurnProgressEvent } from '../common/video-burn-progress-event'
+import { VideoBurnFailedEvent } from '../common/video-burn-failed-event'
 
 const Container = styled.div`
   display: flex;
@@ -65,6 +66,15 @@ export function Application({ store }: { store: Store }) {
       }
     })
 
+    window.electron.onCustomEvent('video-burn-failed', (event: VideoBurnFailedEvent) => {
+      const video = store.videos.find((x) => x.id == event.id)
+      if (video) {
+        video.burnProgressRate = 0
+        video.burnFailedAt = new Date()
+        video.burnError = event.error
+      }
+    })
+
     window.electron.onCustomEvent('video-burn-progress', (event: VideoBurnProgressEvent) => {
       const video = store.videos.find((x) => x.id == event.id)
       if (video) {
@@ -90,6 +100,8 @@ export function Application({ store }: { store: Store }) {
       }
       void window.electron.invoke('burnSubtitle', request)
       video.burnStartedAt = new Date()
+      video.burnFinishedAt = null
+      video.burnFailedAt = null
     }
   }, [])
 

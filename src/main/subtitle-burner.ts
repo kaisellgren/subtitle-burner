@@ -7,6 +7,7 @@ import { sanitizeFilenameForFfmpeg } from './util/shell'
 import { extractSubtitleToTempFile } from './util/video'
 import { fileExists } from './util/fs'
 import { promises as fs } from 'node:fs'
+import { VideoBurnFailedEvent } from '../common/video-burn-failed-event'
 
 export class SubtitleBurner {
   constructor(private win: Electron.CrossProcessExports.BrowserWindow) {}
@@ -42,7 +43,17 @@ export class SubtitleBurner {
       }
     })
 
-    await process
+    try {
+      await process
+    } catch (error) {
+      console.error('Could not burn subtitle onto video', error)
+      const event: VideoBurnFailedEvent = {
+        id,
+        error: error instanceof Error ? error.message : String(error),
+      }
+      this.win.webContents.send('video-burn-failed', event)
+      return
+    }
 
     const event: VideoBurnedEvent = { id }
 
