@@ -5,6 +5,8 @@ import { sha256 } from './util/hash'
 import { VideoBurnProgressEvent } from '../common/video-burn-progress-event'
 import { sanitizeFilenameForFfmpeg } from './util/shell'
 import { extractSubtitleToTempFile } from './util/video'
+import { fileExists } from './util/fs'
+import { promises as fs } from 'node:fs'
 
 export class SubtitleBurner {
   constructor(private win: Electron.CrossProcessExports.BrowserWindow) {}
@@ -16,6 +18,10 @@ export class SubtitleBurner {
 
     const subtitleFullPath = await extractSubtitleToTempFile(fullPath, subtitleIndex)
     const outputFullPath = `${dirname(fullPath)}/(burned) ${sanitizeFilenameForFfmpeg(basename(fullPath))}`
+
+    if (await fileExists(outputFullPath)) {
+      await fs.rm(outputFullPath)
+    }
 
     const process =
       $`ffmpeg -i ${fullPath} -vf subtitles=${subtitleFullPath} -c:v libx264 -b:v 5M -preset ultrafast -movflags +faststart -crf 21 -tune film -c:a copy ${outputFullPath}`.quiet()
