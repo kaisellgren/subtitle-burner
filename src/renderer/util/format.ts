@@ -40,7 +40,7 @@ export function formatDuration(seconds: number): string {
   }
 
   if (seconds >= 1) {
-    parts.push(`${seconds}s`)
+    parts.push(`${Math.floor(seconds)}s`)
   }
 
   return parts.join(' ')
@@ -48,4 +48,16 @@ export function formatDuration(seconds: number): string {
 
 export function formatDateTime(date: Date): string {
   return format(date, 'yyyy-MM-dd HH:mm:ss')
+}
+
+export function formatTimeRemaining(startedAt: Date, progressRate: number): string {
+  if (progressRate <= 0 || progressRate >= 1) {
+    return ''
+  }
+
+  const delta = new Date().getTime() - startedAt.getTime()
+  const timeItTakes = delta / progressRate
+  const timeRemaining = timeItTakes - delta
+
+  return formatDuration(timeRemaining / 1000)
 }

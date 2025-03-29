@@ -8,6 +8,11 @@ import { Store } from './store'
 import WhatshotIcon from '@mui/icons-material/Whatshot'
 import AttachFileIcon from '@mui/icons-material/AttachFile'
 import FolderIcon from '@mui/icons-material/Folder'
+import { BurnSubtitleRequest } from '../common/burn-subtitle-request'
+import { expectNotNull } from '../common/objects'
+import { toVideo } from './video/video'
+import { VideoBurnedEvent } from '../common/video-burned-event'
+import { VideoBurnProgressEvent } from '../common/video-burn-progress-event'
 
 const Container = styled.div`
   display: flex;
@@ -51,12 +56,49 @@ export function Application({ store }: { store: Store }) {
   const [isAddingFiles, setIsAddingFiles] = useState(false)
   const [isBurningStartedMessageShown, setIsBurningStartedMessageShown] = useState(false)
 
+  useEffect(() => {
+    window.electron.onCustomEvent('video-burned', (event: VideoBurnedEvent) => {
+      const video = store.videos.find((x) => x.id == event.id)
+      if (video) {
+        video.burnProgressRate = 1
+        video.burnFinishedAt = new Date()
+      }
+    })
+
+    window.electron.onCustomEvent('video-burn-progress', (event: VideoBurnProgressEvent) => {
+      const video = store.videos.find((x) => x.id == event.id)
+      if (video) {
+        video.burnProgressRate = event.progressRate
+      }
+    })
+  }, [])
+
+  const burnSubtitles = useCallback(async () => {
+    setIsBurningStartedMessageShown(true)
+    for (const video of store.videos) {
+      const burnConfig = expectNotNull(
+        store.burnConfigs.find((x) => x.videoId == video.id),
+        `Expected burn config for video ${video.id}`,
+      )
+      if (burnConfig.subtitleId == null) {
+        continue
+      }
+      const request: BurnSubtitleRequest = {
+        fullPath: video.fullPath,
+        subtitleId: burnConfig.subtitleId,
+        duration: video.durationInSeconds,
+      }
+      void window.electron.invoke('burnSubtitle', request)
+      video.burnStartedAt = new Date()
+    }
+  }, [])
+
   const addFiles = useCallback(async (filePaths) => {
     setIsAddingFiles(true)
     const videos: VideoInfo[] = await Promise.all(
       filePaths.map((x) => window.electron.invoke<VideoInfo>('getVideoInfo', x)),
     )
-    store.videos.push(...videos)
+    store.videos.push(...videos.map(toVideo))
     store.burnConfigs.push(
       ...videos.map((x) => {
         let subtitleId: string | null = null
@@ -117,12 +159,7 @@ export function Application({ store }: { store: Store }) {
 
       <Footer>
         <Tooltip title="Start burning every video">
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<WhatshotIcon />}
-            onClick={() => setIsBurningStartedMessageShown(true)}
-          >
+          <Button variant="contained" color="primary" startIcon={<WhatshotIcon />} onClick={burnSubtitles}>
             Start burning
           </Button>
         </Tooltip>

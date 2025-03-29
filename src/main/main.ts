@@ -4,6 +4,8 @@ import icon64 from './icon/icon-64x64.png'
 import { StateManager } from './state/state-manager'
 import { createMenu } from './menu'
 import { getVideoInfo } from './util/video'
+import { BurnSubtitleRequest } from '../common/burn-subtitle-request'
+import { SubtitleBurner } from './subtitle-burner'
 
 async function main() {
   await app.whenReady()
@@ -26,6 +28,8 @@ async function main() {
     },
     icon,
   })
+
+  const subtitleBurner = new SubtitleBurner(win)
 
   createMenu()
 
@@ -56,6 +60,11 @@ async function main() {
 
   ipcMain.handle('getVideoInfo', async (_, fullPath) => await getVideoInfo(fullPath))
   ipcMain.handle('getSettings', async (_) => state.settings)
+  ipcMain.handle(
+    'burnSubtitle',
+    (_, request: BurnSubtitleRequest) =>
+      void subtitleBurner.burn(request.fullPath, request.subtitleId, request.duration),
+  )
 
   if (process.env.NODE_ENV === 'development') {
     void win.loadURL('http://localhost:5173')

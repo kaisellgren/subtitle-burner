@@ -1,6 +1,6 @@
-import { VideoInfo } from '../common/video-info'
 import { proxy } from 'valtio/vanilla'
 import { Settings } from '../common/settings'
+import { Video } from './video/video'
 
 export interface BurnConfig {
   videoId: string
@@ -8,7 +8,7 @@ export interface BurnConfig {
 }
 
 export interface Store {
-  videos: VideoInfo[]
+  videos: Video[]
   burnConfigs: BurnConfig[]
   settings: Settings
 }
