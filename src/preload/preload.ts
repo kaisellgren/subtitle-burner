@@ -5,4 +5,5 @@ contextBridge.exposeInMainWorld('electron', {
     return webUtils.getPathForFile(file)
   },
   invoke: (channel: string, ...args: any[]) => ipcRenderer.invoke(channel, ...args),
+  onCustomEvent: (eventName: string, callback) => ipcRenderer.on(eventName, (_event, data) => callback(data)),
 })

@@ -1,7 +1,8 @@
 declare global {
   interface ElectronApi {
     getFilePath: (file: File) => string;
-    invoke<T>(channel: string, data: T): Promise<T>
+    invoke<T, R>(channel: string, data: R): Promise<T>
+    onCustomEvent<T>(eventName: string, callback: (data: T) => void): void
   }
 
   interface Window {
