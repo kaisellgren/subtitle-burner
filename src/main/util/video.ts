@@ -12,7 +12,7 @@ export async function getVideoInfo(fullPath: string): Promise<VideoInfo> {
     throw new Error(`Expected a file: ${fullPath}`)
   }
 
-  const result = await $`ffprobe -v quiet -print_format json -show_format -show_streams ${fullPath}`
+  const result = await $`ffprobe -v quiet -print_format json -show_format -show_streams ${fullPath}`.quiet()
 
   const info = JSON.parse(result.stdout)
 
