@@ -2,3 +2,6 @@
 package-lock.json
 /dist
 /state.json
+test-files.ts
+subtitle-burner.log
+.idea/inspectionProfiles
