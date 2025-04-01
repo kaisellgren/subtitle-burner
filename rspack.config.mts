@@ -1,6 +1,13 @@
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { type Configuration, HtmlRspackPlugin, type Plugin, type RuleSetRule, type Target } from '@rspack/core'
+import {
+  type Configuration,
+  CopyRspackPlugin,
+  HtmlRspackPlugin,
+  type Plugin,
+  type RuleSetRule,
+  type Target
+} from '@rspack/core'
 
 type Name = 'main' | 'preload' | 'renderer'
 
@@ -51,7 +58,7 @@ function createConfiguration(name: Name): Configuration | null {
     },
     experiments: {
       css: true,
-    }
+    },
   }
 }
 
@@ -119,6 +126,20 @@ function getPlugins(name: Name): Plugin[] {
       new HtmlRspackPlugin({
         template: `./src/${name}/index.html`,
         filename: 'index.html',
+      }),
+    )
+  }
+
+  if (name == 'main' && env == 'production') {
+    plugins.push(
+      new CopyRspackPlugin({
+        patterns: [
+          {
+            from: '**',
+            to: '../assets',
+            context: 'src/assets',
+          },
+        ],
       }),
     )
   }
