@@ -1,4 +1,4 @@
-# Burn subs
+# Subtitle Burner
 
 Ever wanted to Chromecast with subtitles, but most players like VLC simply do not support subtitles?
 

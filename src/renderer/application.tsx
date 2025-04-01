@@ -135,7 +135,7 @@ export function Application({ store }: { store: Store }) {
 
       <Header>
         <Typography variant="h2" component="h2">
-          Burn subtitles
+          Subtitle Burner
         </Typography>
         <HeaderButtons>
           <Tooltip title="Add movies and TV shows">
