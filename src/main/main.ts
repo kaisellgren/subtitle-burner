@@ -1,6 +1,6 @@
 import { app, BrowserWindow, ipcMain, Menu, nativeImage, Tray } from 'electron'
 import path from 'node:path'
-import icon64 from '../resources/icons/icon-64x64.png'
+import icon256 from '../assets/icons/icon-256x256.png'
 import { StateManager } from './state/state-manager'
 import { createMenu } from './menu'
 import { getVideoInfo } from './util/video'
@@ -14,7 +14,7 @@ async function main() {
 
   const state = await stateManager.read()
 
-  const icon = nativeImage.createFromPath(path.join(__dirname, icon64 as string))
+  const icon = nativeImage.createFromPath(path.join(__dirname, icon256 as string))
 
   const win = new BrowserWindow({
     width: state.mainWindow.bounds.width,
