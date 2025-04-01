@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+    <id>com.kaisellgren.subtitleburner</id>
+    <name>Subtitle Burner</name>
+    <summary>Burn subtitles onto video files. This makes it easier to Chromecast videos with subtitles.</summary>
+    <description>
+        <p>Burn subtitles onto video files. This makes it easier to Chromecast videos with subtitles.</p>
+    </description>
+    <launchable type="desktop-id">com.kaisellgren.subtitleburner.desktop</launchable>
+    <screenshots>
+        <screenshot type="default">
+            <image>
+                https://raw.githubusercontent.com/kaisellgren/subtitle-burner/refs/heads/main/screenshots/screenshot.jpg
+            </image>
+            <caption>Main window of Subtitle Burner</caption>
+        </screenshot>
+    </screenshots>
+    <url type="homepage">https://github.com/kaisellgren/subtitle-burner</url>
+    <metadata_license>CC0-1.0</metadata_license>
+    <project_license>ISC</project_license>
+    <content_rating type="oars-1.1"/>
+    <releases>
+        <release version="3.12.2" date="2013-04-12">
+            <description>
+                <p>Fixes issues X, Y and Z</p>
+            </description>
+        </release>
+    </releases>
+</component>
