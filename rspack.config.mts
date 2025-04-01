@@ -1,6 +1,6 @@
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { type Configuration, type Plugin, type RuleSetRule, type Target, HtmlRspackPlugin } from '@rspack/core'
+import { type Configuration, HtmlRspackPlugin, type Plugin, type RuleSetRule, type Target } from '@rspack/core'
 
 type Name = 'main' | 'preload' | 'renderer'
 
@@ -8,9 +8,10 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const isServe = process.argv.includes('serve')
 const isWatch = process.argv.includes('--watch') || process.argv.includes('-w')
+const env = process.env.NODE_ENV as 'development' | 'production'
 
 function createConfiguration(name: Name): Configuration | null {
-  if (name == 'renderer' && !isServe) {
+  if (name == 'renderer' && !isServe && env == 'development') {
     return null
   }
 
@@ -30,7 +31,7 @@ function createConfiguration(name: Name): Configuration | null {
           hot: false,
         }
       : void 0,
-    mode: 'development',
+    mode: env ?? 'development',
     module: {
       rules: getRules(name),
     },
