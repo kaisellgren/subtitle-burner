@@ -2,14 +2,48 @@
   "name": "subtitle-burner",
   "version": "1.0.0",
   "author": "Kai Sellgren <kaisellgren@gmail.com>",
+  "description": "Burn subtitles onto video files. This makes it easier to Chromecast videos with subtitles.",
+  "homepage": "https://github.com/kaisellgren/subtitle-burner",
+  "repository": "https://github.com/kaisellgren/subtitle-burner",
   "license": "ISC",
+  "main": "dist/main/main.js",
   "type": "commonjs",
   "scripts": {
     "build": "NODE_ENV=production rspack build",
+    "package": "electron-builder --linux",
     "start": "NODE_OPTIONS='' electron dist/main/main.js -- --no-sandbox",
     "serve:frontend": "rspack serve",
     "watch:backend": "rspack build -w",
     "dev": "concurrently \"npm run serve:frontend\" \"npm run watch:backend\""
+  },
+  "build": {
+    "appId": "com.kaisellgren.subtitleburner",
+    "productName": "Subtitle Burner",
+    "linux": {
+      "target": [
+        "deb"
+      ],
+      "category": "Utility",
+      "icon": "src/assets/icons/icon-256x256.png"
+    },
+    "files": [
+      "dist/main/**/*",
+      "dist/preload/**/*",
+      "dist/renderer/**/*",
+      "dist/assets/**/*",
+      "package.json"
+    ],
+    "extraFiles": [
+      {
+        "from": "screenshots/screenshot.jpg",
+        "to": "usr/share/doc/subtitle-burner/screenshot.jpg"
+      },
+      {
+        "from": "src/assets/appstream/appdata.xml",
+        "to": "usr/share/metainfo/com.kaisellgren.subtitleburner.appdata.xml"
+      }
+    ],
+    "asar": true
   },
   "dependencies": {
     "@fontsource/roboto": "^5.1.1",
