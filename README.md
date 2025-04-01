@@ -7,17 +7,7 @@ so that subtitles can be seen regardless of which player you are using.
 
 ## Installation
 
-Make sure you have ffmpeg and NodeJS installed:
+Packages will be provided later.
 
-```shell
-ffmpeg -version
-node --version
-```
-
-Clone this repo and install everything
-
-```shell
-npm i
-```
-
-That's it! You can now right-click any `.mkv` file in Nautilus and select `Scripts -> Burn subtitles`.
+## Screenshots
+![Screenshot](https://raw.githubusercontent.com/kaisellgren/subtitle-burner/refs/heads/main/screenshots/screenshot.jpg)
