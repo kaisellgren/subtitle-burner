@@ -1,6 +1,6 @@
 import { app, BrowserWindow, ipcMain, Menu, nativeImage, Tray } from 'electron'
 import path from 'node:path'
-import icon64 from './icon/icon-64x64.png'
+import icon64 from '../resources/icons/icon-64x64.png'
 import { StateManager } from './state/state-manager'
 import { createMenu } from './menu'
 import { getVideoInfo } from './util/video'
