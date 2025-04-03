@@ -14,7 +14,7 @@ export function StartBurningButton({ store }: StartBurningButtonProps): ReactEle
   const burnSubtitles = useCallback(async () => {
     setIsBurningStartedMessageShown(true)
     for (const video of store.videos) {
-      if (video.burnSettings.subtitleId == null) {
+      if (video.burnSettings.subtitleId == null || video.burnStartedAt != null) {
         continue
       }
       const request: BurnSubtitleRequest = {
