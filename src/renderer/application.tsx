@@ -57,9 +57,7 @@ export function Application({ store, apiClient }: { store: Store; apiClient: Api
   const addFiles = useCallback(async (filePaths) => {
     setIsAddingFiles(true)
 
-    const videoInfos: VideoInfo[] = await Promise.all(
-      filePaths.map((x) => window.electron.invoke<VideoInfo>('getVideoInfo', x)),
-    )
+    const videoInfos: VideoInfo[] = await Promise.all(filePaths.map((x) => apiClient.getVideoInfo(x)))
 
     for (const videoInfo of videoInfos) {
       const video = toVideo(videoInfo)

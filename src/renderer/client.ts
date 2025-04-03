@@ -1,6 +1,7 @@
 import { StopBurningSubtitleRequest } from '../common/stop-burning-subtitle-request'
 import { Video } from './video/video'
 import { Settings } from '../common/settings'
+import { VideoInfo } from '../common/video-info'
 
 export class ApiClient {
   #electron: ElectronApi
@@ -22,5 +23,9 @@ export class ApiClient {
 
   async getSettings(): Promise<Settings> {
     return await this.#electron.invoke<Settings>('getSettings', null)
+  }
+
+  async getVideoInfo(fullPath: string): Promise<VideoInfo> {
+    return await this.#electron.invoke<VideoInfo>('getVideoInfo', fullPath)
   }
 }
