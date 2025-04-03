@@ -10,7 +10,7 @@ import {
   SelectChangeEvent,
   Typography,
 } from '@mui/material'
-import React, { ReactElement } from 'react'
+import React, { ReactElement, useEffect } from 'react'
 import styled from 'styled-components'
 import { formatBitRate, formatBytes, formatDateTime, formatDuration, formatTimeRemaining } from './util/format'
 import { Store } from './store'
@@ -18,6 +18,9 @@ import { useSnapshot } from 'valtio/react'
 import { expectNotNull } from '../common/objects'
 import { Video } from './video/video'
 import { Margin } from './components/styled/margin'
+import { VideoBurnedEvent } from '../common/video-burned-event'
+import { VideoBurnFailedEvent } from '../common/video-burn-failed-event'
+import { VideoBurnProgressEvent } from '../common/video-burn-progress-event'
 
 interface Props {
   store: Store
@@ -67,6 +70,32 @@ const Thumbnail = styled.div`
 
 export function Videos({ store }: Props) {
   const snap = useSnapshot(store)
+
+  useEffect(() => {
+    window.electron.onCustomEvent('video-burned', (event: VideoBurnedEvent) => {
+      const video = store.videos.find((x) => x.id == event.id)
+      if (video) {
+        video.burnProgressRate = 1
+        video.burnFinishedAt = new Date()
+      }
+    })
+
+    window.electron.onCustomEvent('video-burn-failed', (event: VideoBurnFailedEvent) => {
+      const video = store.videos.find((x) => x.id == event.id)
+      if (video) {
+        video.burnProgressRate = 0
+        video.burnFailedAt = new Date()
+        video.burnError = event.error
+      }
+    })
+
+    window.electron.onCustomEvent('video-burn-progress', (event: VideoBurnProgressEvent) => {
+      const video = store.videos.find((x) => x.id == event.id)
+      if (video) {
+        video.burnProgressRate = event.progressRate
+      }
+    })
+  }, [])
 
   return (
     <Container>

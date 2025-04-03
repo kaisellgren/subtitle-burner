@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { Alert, Button, LinearProgress, Paper, Snackbar, Tooltip, Typography } from '@mui/material'
 import styled from 'styled-components'
 import { DragAndDrop } from './components/drag-and-drop'
@@ -10,9 +10,6 @@ import AttachFileIcon from '@mui/icons-material/AttachFile'
 import FolderIcon from '@mui/icons-material/Folder'
 import { BurnSubtitleRequest } from '../common/burn-subtitle-request'
 import { toVideo } from './video/video'
-import { VideoBurnedEvent } from '../common/video-burned-event'
-import { VideoBurnProgressEvent } from '../common/video-burn-progress-event'
-import { VideoBurnFailedEvent } from '../common/video-burn-failed-event'
 
 const Container = styled.div`
   display: flex;
@@ -55,32 +52,6 @@ const ScrollContainer = styled.div`
 export function Application({ store }: { store: Store }) {
   const [isAddingFiles, setIsAddingFiles] = useState(false)
   const [isBurningStartedMessageShown, setIsBurningStartedMessageShown] = useState(false)
-
-  useEffect(() => {
-    window.electron.onCustomEvent('video-burned', (event: VideoBurnedEvent) => {
-      const video = store.videos.find((x) => x.id == event.id)
-      if (video) {
-        video.burnProgressRate = 1
-        video.burnFinishedAt = new Date()
-      }
-    })
-
-    window.electron.onCustomEvent('video-burn-failed', (event: VideoBurnFailedEvent) => {
-      const video = store.videos.find((x) => x.id == event.id)
-      if (video) {
-        video.burnProgressRate = 0
-        video.burnFailedAt = new Date()
-        video.burnError = event.error
-      }
-    })
-
-    window.electron.onCustomEvent('video-burn-progress', (event: VideoBurnProgressEvent) => {
-      const video = store.videos.find((x) => x.id == event.id)
-      if (video) {
-        video.burnProgressRate = event.progressRate
-      }
-    })
-  }, [])
 
   const burnSubtitles = useCallback(async () => {
     setIsBurningStartedMessageShown(true)
