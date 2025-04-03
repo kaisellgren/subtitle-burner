@@ -2,6 +2,7 @@ import {
   Alert,
   AlertTitle,
   FormControl,
+  IconButton,
   InputLabel,
   LinearProgress,
   MenuItem,
@@ -10,7 +11,7 @@ import {
   SelectChangeEvent,
   Typography,
 } from '@mui/material'
-import React, { ReactElement, useEffect } from 'react'
+import React, { ReactElement, useCallback, useEffect } from 'react'
 import styled from 'styled-components'
 import { formatBitRate, formatBytes, formatDateTime, formatDuration, formatTimeRemaining } from './util/format'
 import { Store } from './store'
@@ -21,6 +22,8 @@ import { Margin } from './components/styled/margin'
 import { VideoBurnedEvent } from '../common/video-burned-event'
 import { VideoBurnFailedEvent } from '../common/video-burn-failed-event'
 import { VideoBurnProgressEvent } from '../common/video-burn-progress-event'
+import { Flex } from './components/styled/flex'
+import ClearIcon from '@mui/icons-material/Clear'
 
 interface Props {
   store: Store
@@ -116,11 +119,27 @@ interface VideoBlockProps {
 }
 
 function VideoBlock({ video: x, store }: VideoBlockProps): ReactElement {
+  const onRemove = useCallback(() => {
+    store.videos.splice(
+      store.videos.findIndex((v) => v.id == x.id),
+      1,
+    )
+  })
+
   return (
     <>
-      <Typography variant="h6" component="h6" sx={{ mb: 1 }}>
-        {x.filename} ({formatBytes(x.sizeInBytes)})
-      </Typography>
+      <Flex>
+        <Typography variant="h6" component="h6" sx={{ mb: 1 }}>
+          {x.filename} ({formatBytes(x.sizeInBytes)})
+        </Typography>
+        {x.burnStartedAt == null && (
+          <Tooltip title="Remove video from list">
+            <IconButton onClick={onRemove}>
+              <ClearIcon />
+            </IconButton>
+          </Tooltip>
+        )}
+      </Flex>
       {x.burnFailedAt != null && (
         <>
           <Alert severity="error">
