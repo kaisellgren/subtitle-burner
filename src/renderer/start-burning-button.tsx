@@ -3,6 +3,7 @@ import { BurnSubtitleRequest } from '../common/burn-subtitle-request'
 import { Alert, Button, Snackbar, Tooltip } from '@mui/material'
 import WhatshotIcon from '@mui/icons-material/Whatshot'
 import { Store } from './store'
+import { useSnapshot } from 'valtio/react'
 
 interface StartBurningButtonProps {
   store: Store
@@ -10,6 +11,9 @@ interface StartBurningButtonProps {
 
 export function StartBurningButton({ store }: StartBurningButtonProps): ReactElement {
   const [isBurningStartedMessageShown, setIsBurningStartedMessageShown] = useState(false)
+  const snap = useSnapshot(store)
+
+  const hasVideosToBurn = snap.videos.some((x) => x.burnStartedAt == null && x.burnSettings.subtitleId != null)
 
   const burnSubtitles = useCallback(async () => {
     setIsBurningStartedMessageShown(true)
@@ -32,7 +36,13 @@ export function StartBurningButton({ store }: StartBurningButtonProps): ReactEle
   return (
     <>
       <Tooltip title="Start burning every video">
-        <Button variant="contained" color="primary" startIcon={<WhatshotIcon />} onClick={burnSubtitles}>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<WhatshotIcon />}
+          onClick={burnSubtitles}
+          disabled={!hasVideosToBurn}
+        >
           Start burning
         </Button>
       </Tooltip>
