@@ -79,7 +79,7 @@ export function Videos({ apiClient, store }: Props) {
   const snap = useSnapshot(store)
 
   useEffect(() => {
-    window.electron.onCustomEvent('video-burned', (event: VideoBurnedEvent) => {
+    apiClient.onVideoBurned((event: VideoBurnedEvent) => {
       const video = store.videos.find((x) => x.id == event.id)
       if (video) {
         video.burnProgressRate = 1
@@ -87,7 +87,7 @@ export function Videos({ apiClient, store }: Props) {
       }
     })
 
-    window.electron.onCustomEvent('video-burn-failed', (event: VideoBurnFailedEvent) => {
+    apiClient.onVideoBurnFailed((event: VideoBurnFailedEvent) => {
       const video = store.videos.find((x) => x.id == event.id)
       if (video) {
         video.burnProgressRate = 0
@@ -96,7 +96,7 @@ export function Videos({ apiClient, store }: Props) {
       }
     })
 
-    window.electron.onCustomEvent('video-burn-progress', (event: VideoBurnProgressEvent) => {
+    apiClient.onVideoBurnProgress((event: VideoBurnProgressEvent) => {
       const video = store.videos.find((x) => x.id == event.id)
       if (video) {
         video.burnProgressRate = event.progressRate

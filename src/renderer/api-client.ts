@@ -3,6 +3,21 @@ import { Video } from './video/video'
 import { Settings } from '../common/settings'
 import { VideoInfo } from '../common/video-info'
 import { BurnSubtitleRequest } from '../common/burn-subtitle-request'
+import { VideoBurnedEvent } from '../common/video-burned-event'
+import { VideoBurnProgressEvent } from '../common/video-burn-progress-event'
+import { VideoBurnFailedEvent } from '../common/video-burn-failed-event'
+
+declare global {
+  interface ElectronApi {
+    getFilePath: (file: File) => string
+    invoke<T, R>(channel: string, data: R): Promise<T>
+    onCustomEvent<T>(eventName: string, callback: (data: T) => void): void
+  }
+
+  interface Window {
+    electron: ElectronApi
+  }
+}
 
 export class ApiClient {
   #electron: ElectronApi
@@ -41,4 +56,18 @@ export class ApiClient {
     video.burnFailedAt = null
     await this.#electron.invoke('burnSubtitle', request)
   }
+
+  onVideoBurned(fn: (event: VideoBurnedEvent) => void): void {
+    this.#electron.onCustomEvent('video-burned', fn)
+  }
+
+  onVideoBurnFailed(fn: (event: VideoBurnFailedEvent) => void): void {
+    this.#electron.onCustomEvent('video-burn-failed', fn)
+  }
+
+  onVideoBurnProgress(fn: (event: VideoBurnProgressEvent) => void): void {
+    this.#electron.onCustomEvent('video-burn-progress', fn)
+  }
+
+  getFilePath(file: File): string {}
 }
