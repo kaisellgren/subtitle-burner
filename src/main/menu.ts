@@ -9,20 +9,6 @@ export function createMenu() {
       submenu: [{ role: 'quit' }],
     },
     {
-      label: 'Edit',
-      submenu: [
-        { role: 'undo' },
-        { role: 'redo' },
-        { type: 'separator' },
-        { role: 'cut' },
-        { role: 'copy' },
-        { role: 'paste' },
-        { role: 'delete' },
-        { type: 'separator' },
-        { role: 'selectAll' },
-      ],
-    },
-    {
       label: 'View',
       submenu: [
         { role: 'reload' },
@@ -35,10 +21,6 @@ export function createMenu() {
         { type: 'separator' },
         { role: 'togglefullscreen' },
       ],
-    },
-    {
-      label: 'Window',
-      submenu: [{ role: 'minimize' }, { role: 'zoom' }, { role: 'close' }],
     },
     {
       role: 'help',
