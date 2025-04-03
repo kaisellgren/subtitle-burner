@@ -28,7 +28,10 @@ export function DragAndDrop({ onDropFiles }: Props) {
     window.addEventListener('dragover', (event) => {
       event.preventDefault()
       event.stopPropagation()
-      event.dataTransfer.dropEffect = 'copy'
+
+      if (event.dataTransfer) {
+        event.dataTransfer.dropEffect = 'copy'
+      }
 
       if (!isDragging) {
         setIsDragging(true)
@@ -48,7 +51,9 @@ export function DragAndDrop({ onDropFiles }: Props) {
       event.stopPropagation()
       setIsDragging(false)
 
-      onDropFiles(Array.from(event.dataTransfer.files))
+      if (event.dataTransfer) {
+        onDropFiles(Array.from(event.dataTransfer.files))
+      }
     })
   }, [])
 
