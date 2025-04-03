@@ -1,4 +1,6 @@
-import { Menu } from 'electron'
+import { Menu, shell } from 'electron'
+import { readFileSync } from 'fs'
+import { openLogViewer } from './util/log-viewer'
 
 export function createMenu() {
   const template: (Electron.MenuItem | Electron.MenuItemConstructorOptions)[] = [
@@ -42,10 +44,16 @@ export function createMenu() {
       role: 'help',
       submenu: [
         {
-          label: 'Learn More',
+          label: 'View logs',
           click: async () => {
-            const { shell } = require('electron')
-            await shell.openExternal('https://electronjs.org')
+            const text = (await readFileSync('./subtitle-burner.log')).toString('utf8')
+            await openLogViewer(text)
+          },
+        },
+        {
+          label: 'Open GitHub page',
+          click: async () => {
+            await shell.openExternal('https://github.com/kaisellgren/subtitle-burner')
           },
         },
       ],
