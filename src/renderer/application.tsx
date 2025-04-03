@@ -9,6 +9,8 @@ import AttachFileIcon from '@mui/icons-material/AttachFile'
 import FolderIcon from '@mui/icons-material/Folder'
 import { toVideo } from './video/video'
 import { StartBurningButton } from './start-burning-button'
+import { StopBurningButton } from './stop-burning-button'
+import { Flex } from './components/styled/flex'
 
 const Container = styled.div`
   display: flex;
@@ -116,7 +118,10 @@ export function Application({ store }: { store: Store }) {
       </ScrollContainer>
 
       <Footer>
-        <StartBurningButton store={store} />
+        <Flex $gap={1}>
+          <StopBurningButton store={store} />
+          <StartBurningButton store={store} />
+        </Flex>
       </Footer>
     </Container>
   )

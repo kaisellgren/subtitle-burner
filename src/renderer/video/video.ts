@@ -26,3 +26,7 @@ export function toVideo(x: VideoInfo): Video {
     burnError: '',
   }
 }
+
+export function isBurning(x: Video): boolean {
+  return x.burnStartedAt != null && x.burnFailedAt == null && x.burnFinishedAt == null
+}
