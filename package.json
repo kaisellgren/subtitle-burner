@@ -14,7 +14,8 @@
     "start": "NODE_OPTIONS='' electron dist/main/main.js -- --no-sandbox",
     "serve:frontend": "rspack serve",
     "watch:backend": "rspack build -w",
-    "dev": "NODE_ENV=development concurrently \"npm run serve:frontend\" \"npm run watch:backend\""
+    "dev": "NODE_ENV=development concurrently \"npm run serve:frontend\" \"npm run watch:backend\"",
+    "tsc": "tsc --noEmit"
   },
   "build": {
     "appId": "com.kaisellgren.subtitleburner",

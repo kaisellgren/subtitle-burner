@@ -1,18 +1,38 @@
 {
   "compilerOptions": {
-    "lib": ["ESNext", "DOM"],
+    "lib": [
+      "ESNext",
+      "DOM"
+    ],
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
     "module": "ESNext",
     "moduleResolution": "Node",
     "esModuleInterop": true,
+    "exactOptionalPropertyTypes": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "useDefineForClassFields": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "resolveJsonModule": true,
     "strict": true,
     "noEmit": true,
     "target": "ES2023",
     "jsx": "react",
-    "types": ["node"],
+    "types": [
+      "node",
+      "electron"
+    ],
     "paths": {
-      "@mui/styled-engine": ["./node_modules/@mui/styled-engine-sc"]
+      "@mui/styled-engine": [
+        "./node_modules/@mui/styled-engine-sc"
+      ]
     }
   },
   "include": [
@@ -20,5 +40,9 @@
     "src/preload/preload.ts",
     "src/renderer/styles/styled.d.ts",
     "src/renderer/renderer.tsx"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
   ]
 }
