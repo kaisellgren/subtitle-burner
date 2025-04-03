@@ -18,7 +18,6 @@
   "include": [
     "src/main/main.ts",
     "src/preload/preload.ts",
-    "src/preload/types.d.ts",
     "src/renderer/styles/styled.d.ts",
     "src/renderer/renderer.tsx"
   ]

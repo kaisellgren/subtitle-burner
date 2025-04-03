@@ -77,7 +77,7 @@ export function Application({ store, apiClient }: { store: Store; apiClient: Api
   }, [])
 
   const onDropFiles = useCallback(async (files) => {
-    const filePaths = files.map(window.electron.getFilePath)
+    const filePaths = files.map((x) => apiClient.getFilePath(x))
     await addFiles(filePaths)
   }, [])
 
