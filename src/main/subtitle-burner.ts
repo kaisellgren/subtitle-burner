@@ -1,5 +1,5 @@
 import { basename, dirname } from 'node:path'
-import { $ } from 'zx'
+import { $, ProcessPromise } from 'zx'
 import { VideoBurnedEvent } from '../common/video-burned-event'
 import { sha256 } from './util/hash'
 import { VideoBurnProgressEvent } from '../common/video-burn-progress-event'
@@ -13,6 +13,8 @@ import { Logger } from './util/logger'
 const logger = new Logger(import.meta.url)
 
 export class SubtitleBurner {
+  #videosBeingBurned: Map<string, ProcessPromise> = new Map()
+
   constructor(private win: Electron.CrossProcessExports.BrowserWindow) {}
 
   async burn(fullPath: string, subtitleId: string, duration: number) {
@@ -35,6 +37,8 @@ export class SubtitleBurner {
     const process =
       $`ffmpeg -i ${fullPath} -vf subtitles=${subtitleFullPath} -c:v libx264 -b:v 5M -preset ultrafast -movflags +faststart -crf 21 -tune film -c:a copy ${outputFullPath}`.quiet()
 
+    this.#videosBeingBurned.set(fullPath, process)
+
     process.stderr.on('data', (data) => {
       const output = data.toString()
       logger.debug(`Burn status: ${output}`)
@@ -54,12 +58,14 @@ export class SubtitleBurner {
       logger.info(`Burning subtitle onto video`)
       await process
     } catch (error) {
-      logger.error('Could not burn subtitle onto video', error)
-      const event: VideoBurnFailedEvent = {
-        id,
-        error: error instanceof Error ? error.message : String(error),
+      if (this.#videosBeingBurned.has(fullPath)) {
+        logger.error('Could not burn subtitle onto video', error)
+        const event: VideoBurnFailedEvent = {
+          id,
+          error: error instanceof Error ? error.message : String(error),
+        }
+        this.win.webContents.send('video-burn-failed', event)
       }
-      this.win.webContents.send('video-burn-failed', event)
       return
     }
 
@@ -68,5 +74,15 @@ export class SubtitleBurner {
     const event: VideoBurnedEvent = { id }
 
     this.win.webContents.send('video-burned', event)
+  }
+
+  async stop(fullPath: string): Promise<void> {
+    logger.info(`Stopping subtitle from being burned: ${fullPath}`)
+    const process = this.#videosBeingBurned.get(fullPath)
+    if (process) {
+      this.#videosBeingBurned.delete(fullPath)
+      await process.kill('SIGKILL')
+    }
+    logger.info(`Stopped burning subtitle: ${fullPath}`)
   }
 }

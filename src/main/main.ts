@@ -7,6 +7,7 @@ import { getVideoInfo } from './util/video'
 import { BurnSubtitleRequest } from '../common/burn-subtitle-request'
 import { SubtitleBurner } from './subtitle-burner'
 import { Logger } from './util/logger'
+import { StopBurningSubtitleRequest } from '../common/stop-burning-subtitle-request'
 
 const logger = new Logger(import.meta.url)
 
@@ -78,6 +79,14 @@ async function main() {
       void subtitleBurner.burn(request.fullPath, request.subtitleId, request.duration)
     } catch (error) {
       logger.error(`Could not burn subtitle onto video: ${request.fullPath}`, error)
+    }
+  })
+
+  ipcMain.handle('stopBurningSubtitle', async (_, request: StopBurningSubtitleRequest) => {
+    try {
+      await subtitleBurner.stop(request.fullPath)
+    } catch (error) {
+      logger.error(`Could not stop subtitle from being burned: ${request.fullPath}`, error)
     }
   })
 

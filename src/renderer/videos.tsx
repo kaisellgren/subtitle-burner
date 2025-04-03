@@ -9,6 +9,7 @@ import {
   Paper,
   Select,
   SelectChangeEvent,
+  Tooltip,
   Typography,
 } from '@mui/material'
 import React, { ReactElement, useCallback, useEffect } from 'react'
@@ -24,6 +25,8 @@ import { VideoBurnFailedEvent } from '../common/video-burn-failed-event'
 import { VideoBurnProgressEvent } from '../common/video-burn-progress-event'
 import { Flex } from './components/styled/flex'
 import ClearIcon from '@mui/icons-material/Clear'
+import StopCircleIcon from '@mui/icons-material/StopCircle'
+import { StopBurningSubtitleRequest } from '../common/stop-burning-subtitle-request'
 
 interface Props {
   store: Store
@@ -126,6 +129,20 @@ function VideoBlock({ video: x, store }: VideoBlockProps): ReactElement {
     )
   })
 
+  const onStop = useCallback(async () => {
+    const request: StopBurningSubtitleRequest = {
+      fullPath: x.fullPath,
+    }
+    await window.electron.invoke('stopBurningSubtitle', request)
+    const video = store.videos.find((v) => v.id == x.id)
+    if (video) {
+      video.burnStartedAt = null
+      video.burnFinishedAt = null
+      video.burnFailedAt = null
+      video.burnProgressRate = 0
+    }
+  })
+
   return (
     <>
       <Flex>
@@ -136,6 +153,13 @@ function VideoBlock({ video: x, store }: VideoBlockProps): ReactElement {
           <Tooltip title="Remove video from list">
             <IconButton onClick={onRemove}>
               <ClearIcon />
+            </IconButton>
+          </Tooltip>
+        )}
+        {x.burnStartedAt != null && x.burnFinishedAt == null && x.burnFailedAt == null && (
+          <Tooltip title="Stop burning subtitle">
+            <IconButton onClick={onStop}>
+              <StopCircleIcon />
             </IconButton>
           </Tooltip>
         )}
