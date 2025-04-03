@@ -26,7 +26,7 @@ import { VideoBurnProgressEvent } from '../common/video-burn-progress-event'
 import { Flex } from './components/styled/flex'
 import ClearIcon from '@mui/icons-material/Clear'
 import StopCircleIcon from '@mui/icons-material/StopCircle'
-import { ApiClient } from './client'
+import { ApiClient } from './api-client'
 
 interface Props {
   apiClient: ApiClient

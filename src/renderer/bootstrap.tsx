@@ -11,7 +11,7 @@ import '@fontsource/roboto/500.css'
 import '@fontsource/roboto/700.css'
 import { createStore } from './store'
 import { Settings } from '../common/settings'
-import { ApiClient } from './client'
+import { ApiClient } from './api-client'
 
 interface Props {
   apiClient: ApiClient

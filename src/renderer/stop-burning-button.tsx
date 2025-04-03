@@ -5,7 +5,7 @@ import { useSnapshot } from 'valtio/react'
 import { isBurning } from './video/video'
 import InfoIcon from '@mui/icons-material/Info'
 import StopIcon from '@mui/icons-material/Stop'
-import { ApiClient } from './client'
+import { ApiClient } from './api-client'
 
 interface StartBurningButtonProps {
   apiClient: ApiClient

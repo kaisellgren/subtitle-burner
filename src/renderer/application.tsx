@@ -11,7 +11,7 @@ import { toVideo } from './video/video'
 import { StartBurningButton } from './start-burning-button'
 import { StopBurningButton } from './stop-burning-button'
 import { Flex } from './components/styled/flex'
-import { ApiClient } from './client'
+import { ApiClient } from './api-client'
 
 const Container = styled.div`
   display: flex;

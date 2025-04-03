@@ -1,7 +1,7 @@
 import React from 'react'
 import { createRoot } from 'react-dom/client'
 import { Bootstrap } from './bootstrap'
-import { ApiClient } from './client'
+import { ApiClient } from './api-client'
 
 const apiClient = new ApiClient(window.electron)
 
