@@ -6,9 +6,14 @@ import { createMenu } from './menu'
 import { getVideoInfo } from './util/video'
 import { BurnSubtitleRequest } from '../common/burn-subtitle-request'
 import { SubtitleBurner } from './subtitle-burner'
+import { Logger } from './util/logger'
+
+const logger = new Logger(import.meta.url)
 
 async function main() {
+  logger.info('Starting application')
   await app.whenReady()
+  logger.info('Application started')
 
   const stateManager = new StateManager()
 
@@ -58,13 +63,23 @@ async function main() {
     ]),
   )
 
-  ipcMain.handle('getVideoInfo', async (_, fullPath) => await getVideoInfo(fullPath))
+  ipcMain.handle('getVideoInfo', async (_, fullPath) => {
+    try {
+      return await getVideoInfo(fullPath)
+    } catch (error) {
+      logger.error(`Could not retrieve video info: ${fullPath}`, error)
+    }
+  })
+
   ipcMain.handle('getSettings', async (_) => state.settings)
-  ipcMain.handle(
-    'burnSubtitle',
-    (_, request: BurnSubtitleRequest) =>
-      void subtitleBurner.burn(request.fullPath, request.subtitleId, request.duration),
-  )
+
+  ipcMain.handle('burnSubtitle', (_, request: BurnSubtitleRequest) => {
+    try {
+      void subtitleBurner.burn(request.fullPath, request.subtitleId, request.duration)
+    } catch (error) {
+      logger.error(`Could not burn subtitle onto video: ${request.fullPath}`, error)
+    }
+  })
 
   if (process.env.NODE_ENV === 'development') {
     void win.loadURL('http://localhost:5173')
@@ -79,4 +94,8 @@ async function main() {
   })
 }
 
-void main()
+try {
+  void main()
+} catch (error) {
+  logger.error('Application crashed unexpectedly', error)
+}
