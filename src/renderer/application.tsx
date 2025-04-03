@@ -11,6 +11,7 @@ import { toVideo } from './video/video'
 import { StartBurningButton } from './start-burning-button'
 import { StopBurningButton } from './stop-burning-button'
 import { Flex } from './components/styled/flex'
+import { ApiClient } from './client'
 
 const Container = styled.div`
   display: flex;
@@ -52,6 +53,8 @@ const ScrollContainer = styled.div`
 
 export function Application({ store }: { store: Store }) {
   const [isAddingFiles, setIsAddingFiles] = useState(false)
+
+  const apiClient = new ApiClient(window.electron)
 
   const addFiles = useCallback(async (filePaths) => {
     setIsAddingFiles(true)
@@ -114,12 +117,12 @@ export function Application({ store }: { store: Store }) {
       {isAddingFiles && <LinearProgress />}
 
       <ScrollContainer>
-        <Videos store={store} />
+        <Videos apiClient={apiClient} store={store} />
       </ScrollContainer>
 
       <Footer>
         <Flex $gap={1}>
-          <StopBurningButton store={store} />
+          <StopBurningButton apiClient={apiClient} store={store} />
           <StartBurningButton store={store} />
         </Flex>
       </Footer>

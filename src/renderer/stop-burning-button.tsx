@@ -5,13 +5,14 @@ import { useSnapshot } from 'valtio/react'
 import { isBurning } from './video/video'
 import InfoIcon from '@mui/icons-material/Info'
 import StopIcon from '@mui/icons-material/Stop'
-import { StopBurningSubtitleRequest } from '../common/stop-burning-subtitle-request'
+import { ApiClient } from './client'
 
 interface StartBurningButtonProps {
+  apiClient: ApiClient
   store: Store
 }
 
-export function StopBurningButton({ store }: StartBurningButtonProps): ReactElement {
+export function StopBurningButton({ apiClient, store }: StartBurningButtonProps): ReactElement {
   const [isNotificationShown, setIsNotificationShown] = useState(false)
   const snap = useSnapshot(store)
 
@@ -21,14 +22,7 @@ export function StopBurningButton({ store }: StartBurningButtonProps): ReactElem
     setIsNotificationShown(true)
     for (const video of store.videos) {
       if (isBurning(video)) {
-        const request: StopBurningSubtitleRequest = {
-          fullPath: video.fullPath,
-        }
-        await window.electron.invoke('stopBurningSubtitle', request)
-        video.burnStartedAt = null
-        video.burnFinishedAt = null
-        video.burnFailedAt = null
-        video.burnProgressRate = 0
+        await apiClient.stopBurningSubtitle(video)
       }
     }
   }, [])

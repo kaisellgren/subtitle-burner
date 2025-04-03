@@ -26,9 +26,10 @@ import { VideoBurnProgressEvent } from '../common/video-burn-progress-event'
 import { Flex } from './components/styled/flex'
 import ClearIcon from '@mui/icons-material/Clear'
 import StopCircleIcon from '@mui/icons-material/StopCircle'
-import { StopBurningSubtitleRequest } from '../common/stop-burning-subtitle-request'
+import { ApiClient } from './client'
 
 interface Props {
+  apiClient: ApiClient
   store: Store
 }
 
@@ -74,7 +75,7 @@ const Thumbnail = styled.div`
   }
 `
 
-export function Videos({ store }: Props) {
+export function Videos({ apiClient, store }: Props) {
   const snap = useSnapshot(store)
 
   useEffect(() => {
@@ -108,7 +109,7 @@ export function Videos({ store }: Props) {
       {snap.videos.map((x) => {
         return (
           <Paper elevation={0} key={x.id} sx={{ padding: 2 }}>
-            <VideoBlock video={x} store={store} />
+            <VideoBlock apiClient={apiClient} video={x} store={store} />
           </Paper>
         )
       })}
@@ -117,11 +118,12 @@ export function Videos({ store }: Props) {
 }
 
 interface VideoBlockProps {
+  apiClient: ApiClient
   video: Video
   store: Store
 }
 
-function VideoBlock({ video: x, store }: VideoBlockProps): ReactElement {
+function VideoBlock({ apiClient, video: x, store }: VideoBlockProps): ReactElement {
   const onRemove = useCallback(() => {
     store.videos.splice(
       store.videos.findIndex((v) => v.id == x.id),
@@ -130,16 +132,9 @@ function VideoBlock({ video: x, store }: VideoBlockProps): ReactElement {
   })
 
   const onStop = useCallback(async () => {
-    const request: StopBurningSubtitleRequest = {
-      fullPath: x.fullPath,
-    }
-    await window.electron.invoke('stopBurningSubtitle', request)
     const video = store.videos.find((v) => v.id == x.id)
     if (video) {
-      video.burnStartedAt = null
-      video.burnFinishedAt = null
-      video.burnFailedAt = null
-      video.burnProgressRate = 0
+      await apiClient.stopBurningSubtitle(video)
     }
   })
 
