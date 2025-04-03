@@ -21,5 +21,5 @@ export interface VideoInfo {
   width: number
   height: number
   thumbnail: string | null
-  subtitles: Subtitle[]
+  subtitles: readonly Subtitle[]
 }

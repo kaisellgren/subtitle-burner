@@ -54,7 +54,7 @@ const ScrollContainer = styled.div`
 export function Application({ store, apiClient }: { store: Store; apiClient: ApiClient }) {
   const [isAddingFiles, setIsAddingFiles] = useState(false)
 
-  const addFiles = useCallback(async (filePaths) => {
+  const addFiles = useCallback(async (filePaths: string[]) => {
     setIsAddingFiles(true)
 
     const videoInfos: VideoInfo[] = await Promise.all(filePaths.map((x) => apiClient.getVideoInfo(x)))
@@ -76,7 +76,7 @@ export function Application({ store, apiClient }: { store: Store; apiClient: Api
     setIsAddingFiles(false)
   }, [])
 
-  const onDropFiles = useCallback(async (files) => {
+  const onDropFiles = useCallback(async (files: File[]) => {
     const filePaths = files.map((x) => apiClient.getFilePath(x))
     await addFiles(filePaths)
   }, [])
@@ -119,7 +119,7 @@ export function Application({ store, apiClient }: { store: Store; apiClient: Api
       <Footer>
         <Flex $gap={1}>
           <StopBurningButton apiClient={apiClient} store={store} />
-          <StartBurningButton store={store} />
+          <StartBurningButton apiClient={apiClient} store={store} />
         </Flex>
       </Footer>
     </Container>

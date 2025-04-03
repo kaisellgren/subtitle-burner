@@ -4,12 +4,15 @@ export interface BurnSettings {
   subtitleId: string | null
 }
 
-export interface Video extends VideoInfo {
-  burnSettings: BurnSettings
-  burnProgressRate: number
+interface VideoBurnDates {
   burnStartedAt: Date | null
   burnFinishedAt: Date | null
   burnFailedAt: Date | null
+}
+
+export interface Video extends VideoInfo, VideoBurnDates {
+  burnSettings: BurnSettings
+  burnProgressRate: number
   burnError: string
 }
 
@@ -27,6 +30,6 @@ export function toVideo(x: VideoInfo): Video {
   }
 }
 
-export function isBurning(x: Video): boolean {
+export function isBurning(x: VideoBurnDates): boolean {
   return x.burnStartedAt != null && x.burnFailedAt == null && x.burnFinishedAt == null
 }

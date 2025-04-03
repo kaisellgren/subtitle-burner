@@ -7,6 +7,7 @@ import { VideoBurnedEvent } from '../common/video-burned-event'
 import { VideoBurnProgressEvent } from '../common/video-burn-progress-event'
 import { VideoBurnFailedEvent } from '../common/video-burn-failed-event'
 import { ElectronApi } from '../preload/preload'
+import { expectNotNull } from '../common/objects'
 
 export class ApiClient {
   #electron: ElectronApi
@@ -37,7 +38,7 @@ export class ApiClient {
   async burnSubtitle(video: Video): Promise<void> {
     const request: BurnSubtitleRequest = {
       fullPath: video.fullPath,
-      subtitleId: video.burnSettings.subtitleId,
+      subtitleId: expectNotNull(video.burnSettings.subtitleId, 'Expected subtitleId'),
       duration: video.durationInSeconds,
     }
     video.burnStartedAt = new Date()

@@ -19,7 +19,7 @@ export class Logger {
     this.#log('INFO', message)
   }
 
-  error(message: string, error: Error): void {
+  error(message: string, error: Error | unknown): void {
     this.#log(
       'ERROR',
       `${message}

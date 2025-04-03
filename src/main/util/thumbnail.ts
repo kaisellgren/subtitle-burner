@@ -1,4 +1,4 @@
-import Buffer from 'node:buffer'
+import type { Buffer } from 'node:buffer'
 import { $, tempfile } from 'zx'
 import { promises as fs } from 'fs'
 import { Logger } from './logger'

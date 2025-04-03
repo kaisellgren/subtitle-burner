@@ -119,7 +119,7 @@ export function Videos({ apiClient, store }: Props) {
 
 interface VideoBlockProps {
   apiClient: ApiClient
-  video: Video
+  video: Readonly<Video>
   store: Store
 }
 
@@ -129,14 +129,14 @@ function VideoBlock({ apiClient, video: x, store }: VideoBlockProps): ReactEleme
       store.videos.findIndex((v) => v.id == x.id),
       1,
     )
-  })
+  }, [store])
 
   const onStop = useCallback(async () => {
     const video = store.videos.find((v) => v.id == x.id)
     if (video) {
       await apiClient.stopBurningSubtitle(video)
     }
-  })
+  }, [apiClient, store])
 
   return (
     <>

@@ -70,6 +70,7 @@ async function main() {
     } catch (error) {
       logger.error(`Could not retrieve video info: ${fullPath}`, error)
     }
+    return null
   })
 
   ipcMain.handle('getSettings', async (_) => state.settings)
@@ -90,7 +91,7 @@ async function main() {
     }
   })
 
-  if (process.env.NODE_ENV === 'development') {
+  if (process.env['NODE_ENV'] == 'development') {
     void win.loadURL('http://localhost:5173')
   } else {
     void win.loadFile(path.join(__dirname, '../renderer/index.html'))

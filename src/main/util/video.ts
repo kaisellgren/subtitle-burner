@@ -24,14 +24,14 @@ export async function getVideoInfo(fullPath: string): Promise<VideoInfo> {
 
   logger.debug(`Fetched video info: ${JSON.stringify(info)}`)
 
-  const videoTrack = info.streams.find((x) => x.codec_type == 'video')
+  const videoTrack = info.streams.find((x: any) => x.codec_type == 'video')
   if (videoTrack == null) {
     throw new Error(`Could not find video track for: ${fullPath}`)
   }
 
   logger.debug(`Found video track: ${JSON.stringify(videoTrack)}`)
 
-  const subTracks = info.streams.filter((x) => x.codec_type == 'subtitle')
+  const subTracks = info.streams.filter((x: any) => x.codec_type == 'subtitle')
 
   const durationInSeconds = Math.round(Number(info.format.duration))
 
@@ -54,7 +54,7 @@ export async function getVideoInfo(fullPath: string): Promise<VideoInfo> {
     height: videoTrack.height,
     aspectRatio: videoTrack.display_aspect_ratio,
     thumbnail: thumbnail,
-    subtitles: subTracks.map((x, i): Subtitle => {
+    subtitles: subTracks.map((x: any, i: number): Subtitle => {
       return {
         id: String(i),
         language: x.tags.language,
@@ -79,5 +79,5 @@ export async function extractSubtitleToTempFile(fullPath: string, subtitleIndex:
 function parseFrameRate(value: string): number {
   logger.debug(`Parsing frame rate from value: ${value}`)
   const [a, b] = value.split('/').map(Number)
-  return Number((a / b).toFixed(2))
+  return Number(((a ?? 0) / (b ?? 0)).toFixed(2))
 }
