@@ -36,6 +36,7 @@
     }
   },
   "include": [
+    "src/types.d.ts",
     "src/main/main.ts",
     "src/preload/preload.ts",
     "src/renderer/styles/styled.d.ts",
