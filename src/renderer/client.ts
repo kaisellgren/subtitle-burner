@@ -1,5 +1,6 @@
 import { StopBurningSubtitleRequest } from '../common/stop-burning-subtitle-request'
 import { Video } from './video/video'
+import { Settings } from '../common/settings'
 
 export class ApiClient {
   #electron: ElectronApi
@@ -17,5 +18,9 @@ export class ApiClient {
     video.burnFinishedAt = null
     video.burnFailedAt = null
     video.burnProgressRate = 0
+  }
+
+  async getSettings(): Promise<Settings> {
+    return await this.#electron.invoke<Settings>('getSettings', null)
   }
 }

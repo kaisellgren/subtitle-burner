@@ -51,10 +51,8 @@ const ScrollContainer = styled.div`
   overflow: auto;
 `
 
-export function Application({ store }: { store: Store }) {
+export function Application({ store, apiClient }: { store: Store; apiClient: ApiClient }) {
   const [isAddingFiles, setIsAddingFiles] = useState(false)
-
-  const apiClient = new ApiClient(window.electron)
 
   const addFiles = useCallback(async (filePaths) => {
     setIsAddingFiles(true)
