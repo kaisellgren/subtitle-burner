@@ -8,6 +8,7 @@ export const GlobalStyle = createGlobalStyle`
   html, body {
     margin: 0;
     font-family: 'Roboto', Helvetica, Arial, sans-serif;
+    overflow-x: hidden;
   }
   
   body {
