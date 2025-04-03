@@ -1,15 +1,16 @@
 import React, { ReactElement, useCallback, useState } from 'react'
-import { BurnSubtitleRequest } from '../common/burn-subtitle-request'
 import { Alert, Button, Snackbar, Tooltip } from '@mui/material'
 import WhatshotIcon from '@mui/icons-material/Whatshot'
 import { Store } from './store'
 import { useSnapshot } from 'valtio/react'
+import { ApiClient } from './api-client'
 
 interface StartBurningButtonProps {
   store: Store
+  apiClient: ApiClient
 }
 
-export function StartBurningButton({ store }: StartBurningButtonProps): ReactElement {
+export function StartBurningButton({ apiClient, store }: StartBurningButtonProps): ReactElement {
   const [isBurningStartedMessageShown, setIsBurningStartedMessageShown] = useState(false)
   const snap = useSnapshot(store)
 
@@ -21,15 +22,7 @@ export function StartBurningButton({ store }: StartBurningButtonProps): ReactEle
       if (video.burnSettings.subtitleId == null || video.burnStartedAt != null) {
         continue
       }
-      const request: BurnSubtitleRequest = {
-        fullPath: video.fullPath,
-        subtitleId: video.burnSettings.subtitleId,
-        duration: video.durationInSeconds,
-      }
-      void window.electron.invoke('burnSubtitle', request)
-      video.burnStartedAt = new Date()
-      video.burnFinishedAt = null
-      video.burnFailedAt = null
+      void apiClient.burnSubtitle(video)
     }
   }, [])
 

@@ -2,6 +2,7 @@ import { StopBurningSubtitleRequest } from '../common/stop-burning-subtitle-requ
 import { Video } from './video/video'
 import { Settings } from '../common/settings'
 import { VideoInfo } from '../common/video-info'
+import { BurnSubtitleRequest } from '../common/burn-subtitle-request'
 
 export class ApiClient {
   #electron: ElectronApi
@@ -27,5 +28,17 @@ export class ApiClient {
 
   async getVideoInfo(fullPath: string): Promise<VideoInfo> {
     return await this.#electron.invoke<VideoInfo>('getVideoInfo', fullPath)
+  }
+
+  async burnSubtitle(video: Video): Promise<void> {
+    const request: BurnSubtitleRequest = {
+      fullPath: video.fullPath,
+      subtitleId: video.burnSettings.subtitleId,
+      duration: video.durationInSeconds,
+    }
+    video.burnStartedAt = new Date()
+    video.burnFinishedAt = null
+    video.burnFailedAt = null
+    await this.#electron.invoke('burnSubtitle', request)
   }
 }
