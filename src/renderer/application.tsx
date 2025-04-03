@@ -1,15 +1,14 @@
 import React, { useCallback, useState } from 'react'
-import { Alert, Button, LinearProgress, Paper, Snackbar, Tooltip, Typography } from '@mui/material'
+import { Button, LinearProgress, Paper, Tooltip, Typography } from '@mui/material'
 import styled from 'styled-components'
 import { DragAndDrop } from './components/drag-and-drop'
 import { VideoInfo } from '../common/video-info'
 import { Videos } from './videos'
 import { Store } from './store'
-import WhatshotIcon from '@mui/icons-material/Whatshot'
 import AttachFileIcon from '@mui/icons-material/AttachFile'
 import FolderIcon from '@mui/icons-material/Folder'
-import { BurnSubtitleRequest } from '../common/burn-subtitle-request'
 import { toVideo } from './video/video'
+import { StartBurningButton } from './start-burning-button'
 
 const Container = styled.div`
   display: flex;
@@ -51,25 +50,6 @@ const ScrollContainer = styled.div`
 
 export function Application({ store }: { store: Store }) {
   const [isAddingFiles, setIsAddingFiles] = useState(false)
-  const [isBurningStartedMessageShown, setIsBurningStartedMessageShown] = useState(false)
-
-  const burnSubtitles = useCallback(async () => {
-    setIsBurningStartedMessageShown(true)
-    for (const video of store.videos) {
-      if (video.burnSettings.subtitleId == null) {
-        continue
-      }
-      const request: BurnSubtitleRequest = {
-        fullPath: video.fullPath,
-        subtitleId: video.burnSettings.subtitleId,
-        duration: video.durationInSeconds,
-      }
-      void window.electron.invoke('burnSubtitle', request)
-      video.burnStartedAt = new Date()
-      video.burnFinishedAt = null
-      video.burnFailedAt = null
-    }
-  }, [])
 
   const addFiles = useCallback(async (filePaths) => {
     setIsAddingFiles(true)
@@ -136,23 +116,8 @@ export function Application({ store }: { store: Store }) {
       </ScrollContainer>
 
       <Footer>
-        <Tooltip title="Start burning every video">
-          <Button variant="contained" color="primary" startIcon={<WhatshotIcon />} onClick={burnSubtitles}>
-            Start burning
-          </Button>
-        </Tooltip>
+        <StartBurningButton store={store} />
       </Footer>
-
-      <Snackbar
-        anchorOrigin={{ horizontal: 'center', vertical: 'top' }}
-        open={isBurningStartedMessageShown}
-        autoHideDuration={3000}
-        onClose={() => setIsBurningStartedMessageShown(false)}
-      >
-        <Alert severity="info" variant="filled" sx={{ width: '100%' }} icon={<WhatshotIcon />}>
-          Subtitle burning has started!
-        </Alert>
-      </Snackbar>
     </Container>
   )
 }
