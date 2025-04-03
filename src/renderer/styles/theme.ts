@@ -34,12 +34,6 @@ export const DARK_THEME = createTheme({
               backgroundColor: '#bd3a00',
             },
           },
-          [`&.${buttonClasses.contained}.${buttonClasses.colorSecondary}`]: {
-            backgroundColor: '#ccc',
-            '&:hover': {
-              backgroundColor: '#ddd',
-            },
-          },
         },
       },
     },
