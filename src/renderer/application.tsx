@@ -60,6 +60,10 @@ export function Application({ store, apiClient }: { store: Store; apiClient: Api
     const videoInfos: VideoInfo[] = await Promise.all(filePaths.map((x) => apiClient.getVideoInfo(x)))
 
     for (const videoInfo of videoInfos) {
+      if (store.videos.some((x) => x.fullPath == videoInfo.fullPath)) {
+        continue
+      }
+
       const video = toVideo(videoInfo)
 
       let subtitleId: string | null = null
