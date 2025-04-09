@@ -9,6 +9,7 @@ import { SubtitleBurner } from './subtitle-burner'
 import { Logger } from './util/logger'
 import { StopBurningSubtitleRequest } from '../common/stop-burning-subtitle-request'
 import { isSupportedFileType, SUPPORTED_FILE_TYPES } from '../common/video'
+import { findFiles } from './util/file-finder'
 
 const logger = new Logger(import.meta.url)
 
@@ -79,6 +80,25 @@ async function main() {
     })
 
     return (result.filePaths ?? []).filter(isSupportedFileType)
+  })
+
+  ipcMain.handle('selectDirectories', async (_) => {
+    const result = await dialog.showOpenDialog({
+      title: 'Choose folders',
+      buttonLabel: 'Add folders',
+      properties: ['openDirectory', 'multiSelections'],
+    })
+
+    return result.filePaths ?? []
+  })
+
+  ipcMain.handle('findVideoFiles', async (_, fullPath) => {
+    try {
+      return await findFiles(fullPath, SUPPORTED_FILE_TYPES)
+    } catch (error) {
+      logger.error(`Could not find files: ${fullPath}`, error)
+    }
+    return []
   })
 
   ipcMain.handle('getVideoInfo', async (_, fullPath) => {

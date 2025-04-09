@@ -56,6 +56,10 @@ export function Application({ store, apiClient }: { store: Store; apiClient: Api
   const [isAddingFiles, setIsAddingFiles] = useState(false)
 
   const addFiles = useCallback(async (filePaths: string[]) => {
+    if (filePaths.length == 0) {
+      return
+    }
+
     setIsAddingFiles(true)
 
     const videoInfos: VideoInfo[] = await Promise.all(
@@ -83,13 +87,27 @@ export function Application({ store, apiClient }: { store: Store; apiClient: Api
     setIsAddingFiles(false)
   }, [])
 
+  const addDirectories = useCallback(async (paths: string[]) => {
+    for (const path of paths) {
+      await addFiles(await apiClient.findVideoFiles(path))
+    }
+  }, [])
+
   const onDropFiles = useCallback(async (files: File[]) => {
-    const filePaths = files.map((x) => apiClient.getFilePath(x))
+    const paths = files.map((x) => apiClient.getFilePath(x))
+    const filePaths = paths.filter(isSupportedFileType)
+    const directoryPaths = paths.filter((x) => !isSupportedFileType(x))
+
+    await addDirectories(directoryPaths)
     await addFiles(filePaths)
   }, [])
 
   const onSelectFiles = useCallback(async () => {
     await addFiles(await apiClient.selectFiles())
+  }, [])
+
+  const onSelectDirectories = useCallback(async () => {
+    await addDirectories(await apiClient.selectDirectories())
   }, [])
 
   return (
@@ -107,8 +125,8 @@ export function Application({ store, apiClient }: { store: Store; apiClient: Api
             </Button>
           </Tooltip>
           <Tooltip title="Add folder to search for movies and TV shows">
-            <Button variant="outlined" color="secondary" startIcon={<FolderIcon />}>
-              Add folder...
+            <Button variant="outlined" color="secondary" startIcon={<FolderIcon />} onClick={onSelectDirectories}>
+              Add folders...
             </Button>
           </Tooltip>
         </HeaderButtons>

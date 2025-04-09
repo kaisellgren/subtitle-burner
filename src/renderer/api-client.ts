@@ -39,6 +39,14 @@ export class ApiClient {
     return await this.#electron.invoke<string[]>('selectFiles', null)
   }
 
+  async selectDirectories(): Promise<string[]> {
+    return await this.#electron.invoke<string[]>('selectDirectories', null)
+  }
+
+  async findVideoFiles(fullPath: string): Promise<string[]> {
+    return await this.#electron.invoke<string[]>('findVideoFiles', fullPath)
+  }
+
   async burnSubtitle(video: Video): Promise<void> {
     const request: BurnSubtitleRequest = {
       fullPath: video.fullPath,
