@@ -1,25 +1,22 @@
-import { app, BrowserWindow, dialog, ipcMain, Menu, nativeImage, Tray } from 'electron'
-import path, { dirname } from 'node:path'
+import { app, BrowserWindow, ipcMain, Menu, nativeImage, Tray } from 'electron'
+import path from 'node:path'
 import icon256 from '../assets/icons/icon-256x256.png'
 import { StateManager } from './state/state-manager'
 import { createMenu } from './menu'
-import { getVideoInfo } from './ffmpeg/video'
-import { BurnSubtitleRequest } from '../common/burn-subtitle-request'
 import { SubtitleBurner } from './ffmpeg/subtitle-burner'
 import { Logger } from './util/logger'
-import { StopBurningSubtitleRequest } from '../common/stop-burning-subtitle-request'
-import { isSupportedFileType, SUPPORTED_FILE_TYPES } from '../common/video'
-import { findFiles } from './util/file-finder'
+import { Api } from './api'
 
 const logger = new Logger(import.meta.url)
 
 async function main() {
   logger.info('Starting application')
+
   await app.whenReady()
+
   logger.info('Application started')
 
   const stateManager = new StateManager()
-
   const state = await stateManager.read()
 
   const icon = nativeImage.createFromPath(path.join(__dirname, icon256 as string))
@@ -66,81 +63,7 @@ async function main() {
     ]),
   )
 
-  ipcMain.handle('selectFiles', async (_) => {
-    const result = await dialog.showOpenDialog({
-      title: 'Choose files',
-      buttonLabel: 'Add files',
-      defaultPath: state.mainWindow.lastOpenFileDialogPath,
-      filters: [
-        {
-          name: '',
-          extensions: SUPPORTED_FILE_TYPES,
-        },
-      ],
-      properties: ['openFile', 'multiSelections'],
-    })
-
-    const first = result.filePaths[0]
-    if (first) {
-      state.mainWindow.lastOpenFileDialogPath = dirname(first)
-      await stateManager.write(state)
-    }
-
-    return (result.filePaths ?? []).filter(isSupportedFileType)
-  })
-
-  ipcMain.handle('selectDirectories', async (_) => {
-    const result = await dialog.showOpenDialog({
-      title: 'Choose folders',
-      buttonLabel: 'Add folders',
-      defaultPath: state.mainWindow.lastOpenDirectoryDialogPath,
-      properties: ['openDirectory', 'multiSelections'],
-    })
-
-    const first = result.filePaths[0]
-    if (first) {
-      state.mainWindow.lastOpenDirectoryDialogPath = dirname(first)
-      await stateManager.write(state)
-    }
-
-    return result.filePaths ?? []
-  })
-
-  ipcMain.handle('findVideoFiles', async (_, fullPath) => {
-    try {
-      return await findFiles(fullPath, SUPPORTED_FILE_TYPES)
-    } catch (error) {
-      logger.error(`Could not find files: ${fullPath}`, error)
-    }
-    return []
-  })
-
-  ipcMain.handle('getVideoInfo', async (_, fullPath) => {
-    try {
-      return await getVideoInfo(fullPath)
-    } catch (error) {
-      logger.error(`Could not retrieve video info: ${fullPath}`, error)
-    }
-    return null
-  })
-
-  ipcMain.handle('getSettings', async (_) => state.settings)
-
-  ipcMain.handle('burnSubtitle', (_, request: BurnSubtitleRequest) => {
-    try {
-      void subtitleBurner.burn(request.fullPath, request.subtitleId, request.duration)
-    } catch (error) {
-      logger.error(`Could not burn subtitle onto video: ${request.fullPath}`, error)
-    }
-  })
-
-  ipcMain.handle('stopBurningSubtitle', async (_, request: StopBurningSubtitleRequest) => {
-    try {
-      await subtitleBurner.stop(request.fullPath)
-    } catch (error) {
-      logger.error(`Could not stop subtitle from being burned: ${request.fullPath}`, error)
-    }
-  })
+  new Api(ipcMain, subtitleBurner, state, stateManager)
 
   if (process.env['NODE_ENV'] == 'development') {
     void win.loadURL('http://localhost:5173')
