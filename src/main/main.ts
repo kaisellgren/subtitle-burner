@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, Menu, nativeImage, Tray } from 'electron'
+import { app, BrowserWindow, dialog, ipcMain, Menu, nativeImage, Tray } from 'electron'
 import path from 'node:path'
 import icon256 from '../assets/icons/icon-256x256.png'
 import { StateManager } from './state/state-manager'
@@ -8,6 +8,7 @@ import { BurnSubtitleRequest } from '../common/burn-subtitle-request'
 import { SubtitleBurner } from './subtitle-burner'
 import { Logger } from './util/logger'
 import { StopBurningSubtitleRequest } from '../common/stop-burning-subtitle-request'
+import { isSupportedFileType, SUPPORTED_FILE_TYPES } from '../common/video'
 
 const logger = new Logger(import.meta.url)
 
@@ -63,6 +64,22 @@ async function main() {
       },
     ]),
   )
+
+  ipcMain.handle('selectFiles', async (_) => {
+    const result = await dialog.showOpenDialog({
+      title: 'Choose files',
+      buttonLabel: 'Add files',
+      filters: [
+        {
+          name: '',
+          extensions: SUPPORTED_FILE_TYPES,
+        },
+      ],
+      properties: ['openFile', 'multiSelections'],
+    })
+
+    return (result.filePaths ?? []).filter(isSupportedFileType)
+  })
 
   ipcMain.handle('getVideoInfo', async (_, fullPath) => {
     try {

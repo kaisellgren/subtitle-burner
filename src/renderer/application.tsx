@@ -12,6 +12,7 @@ import { StartBurningButton } from './start-burning-button'
 import { StopBurningButton } from './stop-burning-button'
 import { Flex } from './components/styled/flex'
 import { ApiClient } from './api-client'
+import { isSupportedFileType } from '../common/video'
 
 const Container = styled.div`
   display: flex;
@@ -57,7 +58,9 @@ export function Application({ store, apiClient }: { store: Store; apiClient: Api
   const addFiles = useCallback(async (filePaths: string[]) => {
     setIsAddingFiles(true)
 
-    const videoInfos: VideoInfo[] = await Promise.all(filePaths.map((x) => apiClient.getVideoInfo(x)))
+    const videoInfos: VideoInfo[] = await Promise.all(
+      filePaths.filter(isSupportedFileType).map((x) => apiClient.getVideoInfo(x)),
+    )
 
     for (const videoInfo of videoInfos) {
       if (store.videos.some((x) => x.fullPath == videoInfo.fullPath)) {
@@ -85,6 +88,10 @@ export function Application({ store, apiClient }: { store: Store; apiClient: Api
     await addFiles(filePaths)
   }, [])
 
+  const onSelectFiles = useCallback(async () => {
+    await addFiles(await apiClient.selectFiles())
+  }, [])
+
   return (
     <Container>
       <DragAndDrop onDropFiles={onDropFiles} />
@@ -95,7 +102,7 @@ export function Application({ store, apiClient }: { store: Store; apiClient: Api
         </Typography>
         <HeaderButtons>
           <Tooltip title="Add movies and TV shows">
-            <Button variant="outlined" color="secondary" startIcon={<AttachFileIcon />}>
+            <Button variant="outlined" color="secondary" startIcon={<AttachFileIcon />} onClick={onSelectFiles}>
               Add files...
             </Button>
           </Tooltip>
