@@ -4,6 +4,8 @@ import { Settings } from '../../common/settings'
 export interface State {
   mainWindow: {
     bounds: Rectangle
+    lastOpenFileDialogPath?: string
+    lastOpenDirectoryDialogPath?: string
   }
   settings: Settings
 }

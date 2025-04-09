@@ -1,5 +1,5 @@
 import { app, BrowserWindow, dialog, ipcMain, Menu, nativeImage, Tray } from 'electron'
-import path from 'node:path'
+import path, { dirname } from 'node:path'
 import icon256 from '../assets/icons/icon-256x256.png'
 import { StateManager } from './state/state-manager'
 import { createMenu } from './menu'
@@ -70,6 +70,7 @@ async function main() {
     const result = await dialog.showOpenDialog({
       title: 'Choose files',
       buttonLabel: 'Add files',
+      defaultPath: state.mainWindow.lastOpenFileDialogPath,
       filters: [
         {
           name: '',
@@ -79,6 +80,12 @@ async function main() {
       properties: ['openFile', 'multiSelections'],
     })
 
+    const first = result.filePaths[0]
+    if (first) {
+      state.mainWindow.lastOpenFileDialogPath = dirname(first)
+      await stateManager.write(state)
+    }
+
     return (result.filePaths ?? []).filter(isSupportedFileType)
   })
 
@@ -86,8 +93,15 @@ async function main() {
     const result = await dialog.showOpenDialog({
       title: 'Choose folders',
       buttonLabel: 'Add folders',
+      defaultPath: state.mainWindow.lastOpenDirectoryDialogPath,
       properties: ['openDirectory', 'multiSelections'],
     })
+
+    const first = result.filePaths[0]
+    if (first) {
+      state.mainWindow.lastOpenDirectoryDialogPath = dirname(first)
+      await stateManager.write(state)
+    }
 
     return result.filePaths ?? []
   })
