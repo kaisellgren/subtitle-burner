@@ -9,6 +9,7 @@ import { fileExists } from './util/fs'
 import { promises as fs } from 'node:fs'
 import { VideoBurnFailedEvent } from '../common/video-burn-failed-event'
 import { Logger } from './util/logger'
+import { Notification } from 'electron'
 
 const logger = new Logger(import.meta.url)
 
@@ -74,6 +75,12 @@ export class SubtitleBurner {
     const event: VideoBurnedEvent = { id }
 
     this.win.webContents.send('video-burned', event)
+
+    new Notification({
+      title: 'Subtitle burned',
+      body: `${basename(fullPath)}`,
+      urgency: 'normal',
+    }).show()
   }
 
   async stop(fullPath: string): Promise<void> {
