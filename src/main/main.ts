@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, Menu, nativeImage, Tray } from 'electron'
+import { app, BrowserWindow, ipcMain, nativeImage } from 'electron'
 import path from 'node:path'
 import icon256 from '../assets/icons/icon-256x256.png'
 import { StateManager } from './state/state-manager'
@@ -6,6 +6,7 @@ import { createMenu } from './menu'
 import { SubtitleBurner } from './ffmpeg/subtitle-burner'
 import { Logger } from './util/logger'
 import { Api } from './api'
+import { createSystemTray } from './system-tray'
 
 const logger = new Logger(import.meta.url)
 
@@ -53,15 +54,7 @@ async function main() {
     app.dock.setIcon(icon)
   }
 
-  const tray = new Tray(icon)
-  tray.setContextMenu(
-    Menu.buildFromTemplate([
-      {
-        label: 'Exit',
-        click: () => app.quit(),
-      },
-    ]),
-  )
+  createSystemTray(icon)
 
   new Api(ipcMain, subtitleBurner, state, stateManager)
 
