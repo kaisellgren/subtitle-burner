@@ -1,7 +1,7 @@
 import type { Buffer } from 'node:buffer'
 import { $, tempfile } from 'zx'
-import { promises as fs } from 'fs'
-import { Logger } from './logger'
+import { promises as fs } from 'node:fs'
+import { Logger } from '../util/logger'
 
 const logger = new Logger(import.meta.url)
 

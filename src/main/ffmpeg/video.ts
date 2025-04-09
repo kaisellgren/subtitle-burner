@@ -1,11 +1,11 @@
 import { $ } from 'zx'
 import { Subtitle, VideoInfo } from '../../common/video-info'
 import { basename, dirname, extname } from 'node:path'
-import { promises as fs } from 'fs'
+import { promises as fs } from 'node:fs'
 import { createDataUriThumbnail } from './thumbnail'
-import { sha256 } from './hash'
-import { createTempFilename } from './fs'
-import { Logger } from './logger'
+import { sha256 } from '../util/hash'
+import { createTempFilename } from '../util/fs'
+import { Logger } from '../util/logger'
 
 const logger = new Logger(import.meta.url)
 
