@@ -98,7 +98,7 @@ export function Videos({ apiClient, store }: Props) {
 
     apiClient.onVideoBurnProgress((event: VideoBurnProgressEvent) => {
       const video = store.videos.find((x) => x.id == event.id)
-      if (video) {
+      if (video && video.burnFinishedAt == null && video.burnFailedAt == null) {
         video.burnProgressRate = event.progressRate
       }
     })
