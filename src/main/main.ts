@@ -35,7 +35,7 @@ async function main() {
     icon,
   })
 
-  const subtitleBurner = new SubtitleBurner(win)
+  const subtitleBurner = new SubtitleBurner(win, icon)
 
   createMenu()
 

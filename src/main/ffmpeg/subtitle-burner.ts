@@ -16,9 +16,11 @@ const logger = new Logger(import.meta.url)
 export class SubtitleBurner {
   #videosBeingBurned: Map<string, ProcessPromise> = new Map()
   #win: Electron.CrossProcessExports.BrowserWindow
+  #icon: Electron.NativeImage
 
-  constructor(win: Electron.CrossProcessExports.BrowserWindow) {
+  constructor(win: Electron.CrossProcessExports.BrowserWindow, icon: Electron.NativeImage) {
     this.#win = win
+    this.#icon = icon
   }
 
   async burn(fullPath: string, subtitleId: string, duration: number) {
@@ -74,6 +76,7 @@ export class SubtitleBurner {
           title: 'FAIL: Subtitle failed to burn',
           body: `${basename(fullPath)}`,
           urgency: 'normal',
+          icon: this.#icon,
         }).show()
       }
       return
@@ -89,6 +92,7 @@ export class SubtitleBurner {
       title: 'Subtitle burned',
       body: `${basename(fullPath)}`,
       urgency: 'normal',
+      icon: this.#icon,
     }).show()
   }
 
