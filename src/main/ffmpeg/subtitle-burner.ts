@@ -15,8 +15,11 @@ const logger = new Logger(import.meta.url)
 
 export class SubtitleBurner {
   #videosBeingBurned: Map<string, ProcessPromise> = new Map()
+  #win: Electron.CrossProcessExports.BrowserWindow
 
-  constructor(private win: Electron.CrossProcessExports.BrowserWindow) {}
+  constructor(win: Electron.CrossProcessExports.BrowserWindow) {
+    this.#win = win
+  }
 
   async burn(fullPath: string, subtitleId: string, duration: number) {
     const id = sha256(fullPath)
@@ -51,7 +54,7 @@ export class SubtitleBurner {
         const progressRate = Number((progressInSeconds / duration).toFixed(2))
         const event: VideoBurnProgressEvent = { id: id, progressRate }
 
-        this.win.webContents.send('video-burn-progress', event)
+        this.#win.webContents.send('video-burn-progress', event)
       }
     })
 
@@ -65,7 +68,7 @@ export class SubtitleBurner {
           id,
           error: error instanceof Error ? error.message : String(error),
         }
-        this.win.webContents.send('video-burn-failed', event)
+        this.#win.webContents.send('video-burn-failed', event)
 
         new Notification({
           title: 'FAIL: Subtitle failed to burn',
@@ -80,7 +83,7 @@ export class SubtitleBurner {
 
     const event: VideoBurnedEvent = { id }
 
-    this.win.webContents.send('video-burned', event)
+    this.#win.webContents.send('video-burned', event)
 
     new Notification({
       title: 'Subtitle burned',
