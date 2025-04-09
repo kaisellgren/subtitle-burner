@@ -66,6 +66,12 @@ export class SubtitleBurner {
           error: error instanceof Error ? error.message : String(error),
         }
         this.win.webContents.send('video-burn-failed', event)
+
+        new Notification({
+          title: 'FAIL: Subtitle failed to burn',
+          body: `${basename(fullPath)}`,
+          urgency: 'normal',
+        }).show()
       }
       return
     }
