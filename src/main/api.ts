@@ -2,44 +2,49 @@ import electron, { dialog } from 'electron'
 import { isSupportedFileType, SUPPORTED_FILE_TYPES } from '../common/video'
 import { dirname } from 'node:path'
 import { findFiles } from './util/file-finder'
-import { getVideoInfo } from './ffmpeg/video-analyzer'
 import { BurnSubtitleRequest } from '../common/burn-subtitle-request'
 import { StopBurningSubtitleRequest } from '../common/stop-burning-subtitle-request'
-import { SubtitleBurner } from './ffmpeg/subtitle-burner'
 import { Logger } from './util/logger'
 import { State } from './state/state'
 import { StateManager } from './state/state-manager'
-import { Cache } from './cache'
+import { VideoService } from './video-service'
 
 const logger = new Logger(import.meta.url)
 
 export class Api {
   #ipc: electron.IpcMain
-  #subtitleBurner: SubtitleBurner
   #state: State
   #stateManager: StateManager
-  #cache: Cache
+  #videoService: VideoService
 
-  constructor(
-    ipc: electron.IpcMain,
-    subtitleBurner: SubtitleBurner,
-    state: State,
-    stateManager: StateManager,
-    cache: Cache,
-  ) {
+  constructor(ipc: electron.IpcMain, state: State, stateManager: StateManager, videoService: VideoService) {
     this.#ipc = ipc
-    this.#subtitleBurner = subtitleBurner
     this.#state = state
     this.#stateManager = stateManager
-    this.#cache = cache
+    this.#videoService = videoService
 
     this.#ipc.handle('selectFiles', this.#selectFiles)
     this.#ipc.handle('selectDirectories', this.#selectDirectories)
     this.#ipc.handle('findVideoFiles', this.#findVideoFiles)
-    this.#ipc.handle('getVideoInfo', this.#getVideoInfo)
-    this.#ipc.handle('getSettings', this.#getSettings)
-    this.#ipc.handle('burnSubtitle', this.#burnSubtitle)
-    this.#ipc.handle('stopBurningSubtitle', this.#stopBurningSubtitle)
+    this.#registerApi('getSettings', async () => this.#state.settings)
+    this.#registerApi('getVideoInfo', (fullPath: string) => this.#videoService.getVideoInfo(fullPath))
+    this.#registerApi('burnSubtitle', (request: BurnSubtitleRequest) =>
+      this.#videoService.burnSubtitle(request.fullPath, request.subtitleId, request.duration),
+    )
+    this.#registerApi('stopBurningSubtitle', (request: StopBurningSubtitleRequest) =>
+      this.#videoService.stopBurningSubtitle(request.fullPath),
+    )
+  }
+
+  #registerApi<T>(method: string, fn: (data: T) => Promise<unknown>) {
+    this.#ipc.handle(method, async (_: electron.IpcMainInvokeEvent, data: T) => {
+      try {
+        return await fn(data)
+      } catch (error) {
+        logger.error(`Failed to call '${method}' with data: ${data}`, error)
+      }
+      return null
+    })
   }
 
   #selectFiles = async (_: electron.IpcMainInvokeEvent) => {
@@ -89,32 +94,5 @@ export class Api {
       logger.error(`Could not find files: ${fullPath}`, error)
     }
     return []
-  }
-
-  #getVideoInfo = async (_: electron.IpcMainInvokeEvent, fullPath: string) => {
-    try {
-      return await this.#cache.getOrRetrieve(`getVideoInfo-${fullPath}`, async () => await getVideoInfo(fullPath))
-    } catch (error) {
-      logger.error(`Could not retrieve video info: ${fullPath}`, error)
-    }
-    return null
-  }
-
-  #getSettings = async () => this.#state.settings
-
-  #burnSubtitle = (_: electron.IpcMainInvokeEvent, request: BurnSubtitleRequest) => {
-    try {
-      void this.#subtitleBurner.burn(request.fullPath, request.subtitleId, request.duration)
-    } catch (error) {
-      logger.error(`Could not burn subtitle onto video: ${request.fullPath}`, error)
-    }
-  }
-
-  #stopBurningSubtitle = async (_: electron.IpcMainInvokeEvent, request: StopBurningSubtitleRequest) => {
-    try {
-      await this.#subtitleBurner.stop(request.fullPath)
-    } catch (error) {
-      logger.error(`Could not stop subtitle from being burned: ${request.fullPath}`, error)
-    }
   }
 }
