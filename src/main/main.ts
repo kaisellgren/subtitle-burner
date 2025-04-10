@@ -22,8 +22,7 @@ async function main() {
   logger.info('Application started')
 
   const cache = new Cache()
-  const stateManager = new StateManager()
-  await stateManager.init()
+  const stateManager = await StateManager.init()
 
   const icon = nativeImage.createFromPath(path.join(__dirname, icon256 as string))
 

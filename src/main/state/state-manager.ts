@@ -15,7 +15,9 @@ export class StateManager {
     return expectNotNull(this.#state, 'Expected state to be initialized')
   }
 
-  async init(): Promise<void> {
+  static async init(): Promise<StateManager> {
+    const stateManager = new StateManager()
+
     logger.info('Reading state')
 
     if (await fileExists(stateFilename)) {
@@ -27,8 +29,8 @@ export class StateManager {
           ...JSON.parse(data),
         }
         logger.debug(`State loaded: ${JSON.stringify(state)}`)
-        this.#state = state
-        return
+        stateManager.#state = state
+        return stateManager
       } catch (e) {
         logger.error('Could not read state file', e)
       }
@@ -36,7 +38,9 @@ export class StateManager {
 
     logger.debug('Using default state')
 
-    this.#state = STATE_DEFAULT
+    stateManager.#state = STATE_DEFAULT
+
+    return stateManager
   }
 
   async save(): Promise<void> {
