@@ -1,6 +1,6 @@
 import { Menu, shell } from 'electron'
 import { readFileSync } from 'fs'
-import { openLogViewer } from './util/log-viewer'
+import { openLogViewer } from '../util/log-viewer'
 
 export function createMenu() {
   const template: (Electron.MenuItem | Electron.MenuItemConstructorOptions)[] = [
