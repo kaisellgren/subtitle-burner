@@ -1,5 +1,5 @@
 import { Cache } from './cache'
-import { SubtitleBurner } from './ffmpeg/subtitle-burner'
+import { SubtitleBurner } from './subtitle-burner'
 import { promises as fs } from 'fs'
 import { $, tempfile } from 'zx'
 import { sha256 } from './util/hash'
