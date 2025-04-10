@@ -1,6 +1,4 @@
-import { app, ipcMain, nativeImage } from 'electron'
-import path from 'node:path'
-import icon256 from '../assets/icons/icon-256x256.png'
+import { app, ipcMain } from 'electron'
 import { StateManager } from './state/state-manager'
 import { createMenu } from './os/menu'
 import { SubtitleBurner } from './subtitle-burner'
@@ -23,15 +21,13 @@ async function main() {
 
   const stateManager = await StateManager.init()
 
-  const icon = nativeImage.createFromPath(path.join(__dirname, icon256 as string))
-
   createMenu()
-  createSystemTray(icon)
-  const win = createMainWindow(stateManager, icon)
+  createSystemTray()
+  const win = createMainWindow(stateManager)
 
   const cache = new Cache()
   const fileService = new FileService(stateManager)
-  const subtitleBurner = new SubtitleBurner(win, icon)
+  const subtitleBurner = new SubtitleBurner(win)
   const videoService = new VideoService(cache, subtitleBurner)
 
   new Api(ipcMain, stateManager, videoService, fileService)

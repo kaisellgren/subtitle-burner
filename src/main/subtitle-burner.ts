@@ -9,17 +9,16 @@ import { promises as fs } from 'node:fs'
 import { VideoBurnFailedEvent } from '../common/video-burn-failed-event'
 import { Logger } from './util/logger'
 import { Notification } from 'electron'
+import { APP_ICON } from './os/app-icon'
 
 const logger = new Logger(import.meta.url)
 
 export class SubtitleBurner {
   #videosBeingBurned: Map<string, ProcessPromise> = new Map()
   #win: Electron.CrossProcessExports.BrowserWindow
-  #icon: Electron.NativeImage
 
-  constructor(win: Electron.CrossProcessExports.BrowserWindow, icon: Electron.NativeImage) {
+  constructor(win: Electron.CrossProcessExports.BrowserWindow) {
     this.#win = win
-    this.#icon = icon
   }
 
   async burn(fullPath: string, subtitleId: string, duration: number) {
@@ -75,7 +74,7 @@ export class SubtitleBurner {
           title: 'FAIL: Subtitle failed to burn',
           body: `${basename(fullPath)}`,
           urgency: 'normal',
-          icon: this.#icon,
+          icon: APP_ICON,
         }).show()
       }
       return
@@ -91,7 +90,7 @@ export class SubtitleBurner {
       title: 'Subtitle burned',
       body: `${basename(fullPath)}`,
       urgency: 'normal',
-      icon: this.#icon,
+      icon: APP_ICON,
     }).show()
   }
 

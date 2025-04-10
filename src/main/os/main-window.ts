@@ -1,9 +1,9 @@
 import path from 'node:path'
 import { app, BrowserWindow } from 'electron'
 import { StateManager } from '../state/state-manager'
-import NativeImage = Electron.NativeImage
+import { APP_ICON } from './app-icon'
 
-export function createMainWindow(stateManager: StateManager, icon: NativeImage): BrowserWindow {
+export function createMainWindow(stateManager: StateManager): BrowserWindow {
   const win = new BrowserWindow({
     width: stateManager.state.mainWindow.bounds.width,
     height: stateManager.state.mainWindow.bounds.height,
@@ -14,7 +14,7 @@ export function createMainWindow(stateManager: StateManager, icon: NativeImage):
       contextIsolation: true,
       defaultEncoding: 'utf-8',
     },
-    icon,
+    icon: APP_ICON,
   })
 
   win.on('close', async () => {
@@ -29,7 +29,7 @@ export function createMainWindow(stateManager: StateManager, icon: NativeImage):
   })
 
   if (process.platform == 'linux' && app.dock != null) {
-    app.dock.setIcon(icon)
+    app.dock.setIcon(APP_ICON)
   }
 
   if (process.env['NODE_ENV'] == 'development') {

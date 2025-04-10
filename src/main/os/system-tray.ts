@@ -1,7 +1,9 @@
-import electron, { app, Menu, Tray } from 'electron'
+import { app, Menu, Tray } from 'electron'
+import { APP_ICON } from './app-icon'
 
-export function createSystemTray(icon: electron.NativeImage) {
-  const tray = new Tray(icon)
+export function createSystemTray() {
+  const tray = new Tray(APP_ICON)
+
   tray.setContextMenu(
     Menu.buildFromTemplate([
       {
