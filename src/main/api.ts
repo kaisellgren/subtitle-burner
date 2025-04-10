@@ -1,13 +1,13 @@
 import electron, { dialog } from 'electron'
 import { isSupportedFileType, SUPPORTED_FILE_TYPES } from '../common/video'
 import { dirname } from 'node:path'
-import { findFiles } from './util/file-finder'
 import { BurnSubtitleRequest } from '../common/burn-subtitle-request'
 import { StopBurningSubtitleRequest } from '../common/stop-burning-subtitle-request'
 import { Logger } from './util/logger'
 import { State } from './state/state'
 import { StateManager } from './state/state-manager'
 import { VideoService } from './video-service'
+import { FileService } from './file-service'
 
 const logger = new Logger(import.meta.url)
 
@@ -16,16 +16,24 @@ export class Api {
   #state: State
   #stateManager: StateManager
   #videoService: VideoService
+  #fileService: FileService
 
-  constructor(ipc: electron.IpcMain, state: State, stateManager: StateManager, videoService: VideoService) {
+  constructor(
+    ipc: electron.IpcMain,
+    state: State,
+    stateManager: StateManager,
+    videoService: VideoService,
+    fileService: FileService,
+  ) {
     this.#ipc = ipc
     this.#state = state
     this.#stateManager = stateManager
     this.#videoService = videoService
+    this.#fileService = fileService
 
     this.#ipc.handle('selectFiles', this.#selectFiles)
     this.#ipc.handle('selectDirectories', this.#selectDirectories)
-    this.#ipc.handle('findVideoFiles', this.#findVideoFiles)
+    this.#registerApi('findVideoFiles', (fullPath: string) => this.#fileService.findVideoFiles(fullPath))
     this.#registerApi('getSettings', async () => this.#state.settings)
     this.#registerApi('getVideoInfo', (fullPath: string) => this.#videoService.getVideoInfo(fullPath))
     this.#registerApi('burnSubtitle', (request: BurnSubtitleRequest) =>
@@ -85,14 +93,5 @@ export class Api {
     }
 
     return result.filePaths ?? []
-  }
-
-  #findVideoFiles = async (_: electron.IpcMainInvokeEvent, fullPath: string) => {
-    try {
-      return await findFiles(fullPath, SUPPORTED_FILE_TYPES)
-    } catch (error) {
-      logger.error(`Could not find files: ${fullPath}`, error)
-    }
-    return []
   }
 }

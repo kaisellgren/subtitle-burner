@@ -9,6 +9,7 @@ import { Api } from './api'
 import { createSystemTray } from './system-tray'
 import { Cache } from './cache'
 import { VideoService } from './video-service'
+import { FileService } from './file-service'
 
 const logger = new Logger(import.meta.url)
 
@@ -38,6 +39,7 @@ async function main() {
     icon,
   })
 
+  const fileService = new FileService()
   const subtitleBurner = new SubtitleBurner(win, icon)
   const videoService = new VideoService(cache, subtitleBurner)
 
@@ -60,7 +62,7 @@ async function main() {
 
   createSystemTray(icon)
 
-  new Api(ipcMain, state, stateManager, videoService)
+  new Api(ipcMain, state, stateManager, videoService, fileService)
 
   if (process.env['NODE_ENV'] == 'development') {
     void win.loadURL('http://localhost:5173')
