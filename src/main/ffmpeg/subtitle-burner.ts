@@ -4,8 +4,7 @@ import { VideoBurnedEvent } from '../../common/video-burned-event'
 import { sha256 } from '../util/hash'
 import { VideoBurnProgressEvent } from '../../common/video-burn-progress-event'
 import { sanitizeFilenameForFfmpeg } from '../util/shell'
-import { extractSubtitleToTempFile } from './video-analyzer'
-import { fileExists } from '../util/fs'
+import { createTempFilename, fileExists } from '../util/fs'
 import { promises as fs } from 'node:fs'
 import { VideoBurnFailedEvent } from '../../common/video-burn-failed-event'
 import { Logger } from '../util/logger'
@@ -30,7 +29,7 @@ export class SubtitleBurner {
 
     const subtitleIndex = Number(subtitleId)
 
-    const subtitleFullPath = await extractSubtitleToTempFile(fullPath, subtitleIndex)
+    const subtitleFullPath = await this.#extractSubtitleToTempFile(fullPath, subtitleIndex)
     const outputFullPath = `${dirname(fullPath)}/(burned) ${sanitizeFilenameForFfmpeg(basename(fullPath))}`
 
     logger.info(`Target file path: ${outputFullPath}`)
@@ -104,5 +103,13 @@ export class SubtitleBurner {
       await process.kill('SIGKILL')
     }
     logger.info(`Stopped burning subtitle: ${fullPath}`)
+  }
+
+  async #extractSubtitleToTempFile(fullPath: string, subtitleIndex: number): Promise<string> {
+    const tempFile = createTempFilename('subtitle', '.srt')
+    logger.info(`Extracting subtitle from: ${fullPath}`)
+    await $`ffmpeg -i ${fullPath} -map 0:s:${subtitleIndex} ${tempFile}`.quiet()
+    logger.info(`Subtitle extracted to: ${tempFile}`)
+    return tempFile
   }
 }
