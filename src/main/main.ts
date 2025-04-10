@@ -22,15 +22,15 @@ async function main() {
 
   const cache = new Cache()
   const stateManager = new StateManager()
-  const state = await stateManager.read()
+  await stateManager.init()
 
   const icon = nativeImage.createFromPath(path.join(__dirname, icon256 as string))
 
   const win = new BrowserWindow({
-    width: state.mainWindow.bounds.width,
-    height: state.mainWindow.bounds.height,
-    x: state.mainWindow.bounds.x,
-    y: state.mainWindow.bounds.y,
+    width: stateManager.state.mainWindow.bounds.width,
+    height: stateManager.state.mainWindow.bounds.height,
+    x: stateManager.state.mainWindow.bounds.x,
+    y: stateManager.state.mainWindow.bounds.y,
     webPreferences: {
       preload: path.join(__dirname, '../preload/preload.js'),
       contextIsolation: true,
@@ -39,21 +39,15 @@ async function main() {
     icon,
   })
 
-  const fileService = new FileService()
+  const fileService = new FileService(stateManager)
   const subtitleBurner = new SubtitleBurner(win, icon)
   const videoService = new VideoService(cache, subtitleBurner)
 
   createMenu()
 
   win.on('close', async () => {
-    const bounds = win.getBounds()
-    await stateManager.write({
-      ...state,
-      mainWindow: {
-        ...state.mainWindow,
-        bounds,
-      },
-    })
+    stateManager.state.mainWindow.bounds = win.getBounds()
+    await stateManager.save()
   })
 
   if (process.platform === 'linux' && app.dock != null) {
@@ -62,7 +56,7 @@ async function main() {
 
   createSystemTray(icon)
 
-  new Api(ipcMain, state, stateManager, videoService, fileService)
+  new Api(ipcMain, stateManager, videoService, fileService)
 
   if (process.env['NODE_ENV'] == 'development') {
     void win.loadURL('http://localhost:5173')
