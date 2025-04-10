@@ -1,4 +1,4 @@
-import { app, ipcMain } from 'electron'
+import { app } from 'electron'
 import { StateManager } from './state/state-manager'
 import { createMenu } from './os/menu'
 import { SubtitleBurner } from './subtitle-burner'
@@ -30,7 +30,7 @@ async function main() {
   const subtitleBurner = new SubtitleBurner(win)
   const videoService = new VideoService(cache, subtitleBurner)
 
-  new Api(ipcMain, stateManager, videoService, fileService)
+  new Api(stateManager, videoService, fileService)
 }
 
 try {

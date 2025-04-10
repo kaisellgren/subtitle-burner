@@ -1,4 +1,4 @@
-import electron from 'electron'
+import electron, { ipcMain } from 'electron'
 import { BurnSubtitleRequest } from '../common/burn-subtitle-request'
 import { StopBurningSubtitleRequest } from '../common/stop-burning-subtitle-request'
 import { Logger } from './util/logger'
@@ -9,11 +9,7 @@ import { StateManager } from './state/state-manager'
 const logger = new Logger(import.meta.url)
 
 export class Api {
-  #ipc: electron.IpcMain
-
-  constructor(ipc: electron.IpcMain, stateManager: StateManager, videoService: VideoService, fileService: FileService) {
-    this.#ipc = ipc
-
+  constructor(stateManager: StateManager, videoService: VideoService, fileService: FileService) {
     this.#registerApi('selectFiles', () => fileService.selectFiles())
     this.#registerApi('selectDirectories', () => fileService.selectDirectories())
     this.#registerApi('findVideoFiles', (fullPath: string) => fileService.findVideoFiles(fullPath))
@@ -28,7 +24,7 @@ export class Api {
   }
 
   #registerApi<T>(method: string, fn: (data: T) => unknown) {
-    this.#ipc.handle(method, async (_: electron.IpcMainInvokeEvent, data: T) => {
+    ipcMain.handle(method, async (_: electron.IpcMainInvokeEvent, data: T) => {
       try {
         return await fn(data)
       } catch (error) {
