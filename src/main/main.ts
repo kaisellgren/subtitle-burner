@@ -21,7 +21,6 @@ async function main() {
 
   logger.info('Application started')
 
-  const cache = new Cache()
   const stateManager = await StateManager.init()
 
   const icon = nativeImage.createFromPath(path.join(__dirname, icon256 as string))
@@ -30,6 +29,7 @@ async function main() {
   createSystemTray(icon)
   const win = createMainWindow(stateManager, icon)
 
+  const cache = new Cache()
   const fileService = new FileService(stateManager)
   const subtitleBurner = new SubtitleBurner(win, icon)
   const videoService = new VideoService(cache, subtitleBurner)
