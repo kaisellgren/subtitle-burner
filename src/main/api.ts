@@ -9,6 +9,7 @@ import { SubtitleBurner } from './ffmpeg/subtitle-burner'
 import { Logger } from './util/logger'
 import { State } from './state/state'
 import { StateManager } from './state/state-manager'
+import { Cache } from './cache'
 
 const logger = new Logger(import.meta.url)
 
@@ -17,12 +18,20 @@ export class Api {
   #subtitleBurner: SubtitleBurner
   #state: State
   #stateManager: StateManager
+  #cache: Cache
 
-  constructor(ipc: electron.IpcMain, subtitleBurner: SubtitleBurner, state: State, stateManager: StateManager) {
+  constructor(
+    ipc: electron.IpcMain,
+    subtitleBurner: SubtitleBurner,
+    state: State,
+    stateManager: StateManager,
+    cache: Cache,
+  ) {
     this.#ipc = ipc
     this.#subtitleBurner = subtitleBurner
     this.#state = state
     this.#stateManager = stateManager
+    this.#cache = cache
 
     this.#ipc.handle('selectFiles', this.#selectFiles)
     this.#ipc.handle('selectDirectories', this.#selectDirectories)
@@ -84,7 +93,7 @@ export class Api {
 
   #getVideoInfo = async (_: electron.IpcMainInvokeEvent, fullPath: string) => {
     try {
-      return await getVideoInfo(fullPath)
+      return await this.#cache.getOrRetrieve(`getVideoInfo-${fullPath}`, async () => await getVideoInfo(fullPath))
     } catch (error) {
       logger.error(`Could not retrieve video info: ${fullPath}`, error)
     }

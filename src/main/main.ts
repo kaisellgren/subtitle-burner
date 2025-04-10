@@ -7,6 +7,7 @@ import { SubtitleBurner } from './ffmpeg/subtitle-burner'
 import { Logger } from './util/logger'
 import { Api } from './api'
 import { createSystemTray } from './system-tray'
+import { Cache } from './cache'
 
 const logger = new Logger(import.meta.url)
 
@@ -17,6 +18,7 @@ async function main() {
 
   logger.info('Application started')
 
+  const cache = new Cache()
   const stateManager = new StateManager()
   const state = await stateManager.read()
 
@@ -56,7 +58,7 @@ async function main() {
 
   createSystemTray(icon)
 
-  new Api(ipcMain, subtitleBurner, state, stateManager)
+  new Api(ipcMain, subtitleBurner, state, stateManager, cache)
 
   if (process.env['NODE_ENV'] == 'development') {
     void win.loadURL('http://localhost:5173')
