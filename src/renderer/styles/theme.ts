@@ -1,6 +1,7 @@
 import { alertClasses, buttonClasses, createTheme } from '@mui/material'
 
 export const DARK_THEME = createTheme({
+  spacing: 10,
   palette: {
     primary: {
       main: '#e94e06',

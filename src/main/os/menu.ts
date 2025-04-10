@@ -1,12 +1,22 @@
 import { Menu, shell } from 'electron'
 import { readFileSync } from 'fs'
 import { openLogViewer } from '../util/log-viewer'
+import { openPreferences } from './preferences-window'
 
 export function createMenu() {
   const template: (Electron.MenuItem | Electron.MenuItemConstructorOptions)[] = [
     {
       label: 'File',
-      submenu: [{ role: 'quit' }],
+      submenu: [
+        {
+          label: '&Preferences',
+          click: async () => {
+            await openPreferences()
+          },
+        },
+        { type: 'separator' },
+        { role: 'quit' },
+      ],
     },
     {
       label: 'View',

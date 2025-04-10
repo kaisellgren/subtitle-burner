@@ -12,6 +12,7 @@ import '@fontsource/roboto/700.css'
 import { createStore } from './store'
 import { Settings } from '../common/settings'
 import { ApiClient } from './api-client'
+import { Preferences } from './preferences'
 
 interface Props {
   apiClient: ApiClient
@@ -19,12 +20,18 @@ interface Props {
 }
 
 export function Bootstrap({ initialSettings, apiClient }: Props) {
+  const store = createStore(initialSettings)
+
+  const params = new URLSearchParams(window.location.search)
+  const windowType = params.get('window')
+
   return (
     <MuiThemeProvider theme={DARK_THEME}>
       <StyledComponentsThemeProvider theme={DARK_THEME}>
         <CssBaseline />
         <GlobalStyle />
-        <Application apiClient={apiClient} store={createStore(initialSettings)} />
+        {windowType == 'preferences' && <Preferences apiClient={apiClient} store={store} />}
+        {windowType == 'application' && <Application apiClient={apiClient} store={store} />}
       </StyledComponentsThemeProvider>
     </MuiThemeProvider>
   )

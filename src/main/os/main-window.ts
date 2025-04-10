@@ -33,9 +33,9 @@ export function createMainWindow(stateManager: StateManager): BrowserWindow {
   }
 
   if (process.env['NODE_ENV'] == 'development') {
-    void win.loadURL('http://localhost:5173')
+    void win.loadURL('http://localhost:5173/index.html?window=application')
   } else {
-    void win.loadFile(path.join(__dirname, '../renderer/index.html'))
+    void win.loadFile(path.join(__dirname, '../renderer/index.html'), { query: { window: 'application' } })
   }
 
   return win

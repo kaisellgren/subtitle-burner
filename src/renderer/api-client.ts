@@ -74,4 +74,8 @@ export class ApiClient {
   getFilePath(file: File): string {
     return this.#electron.getFilePath(file)
   }
+
+  async saveSettings(settings: Settings): Promise<void> {
+    await this.#electron.invoke('saveSettings', JSON.stringify(settings))
+  }
 }

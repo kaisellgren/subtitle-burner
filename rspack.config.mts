@@ -15,7 +15,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const isServe = process.argv.includes('serve')
 const isWatch = process.argv.includes('--watch') || process.argv.includes('-w')
-const env = process.env.NODE_ENV as 'development' | 'production'
+const env = process.env['NODE_ENV'] as 'development' | 'production'
 
 function createConfiguration(name: Name): Configuration | null {
   if (name == 'renderer' && !isServe && env == 'development') {

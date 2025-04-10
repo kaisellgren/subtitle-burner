@@ -21,6 +21,10 @@ export class Api {
     this.#registerApi('stopBurningSubtitle', (request: StopBurningSubtitleRequest) =>
       videoService.stopBurningSubtitle(request.fullPath),
     )
+    this.#registerApi('saveSettings', async (settings: string) => {
+      stateManager.state.settings = JSON.parse(settings)
+      await stateManager.save()
+    })
   }
 
   #registerApi<T>(method: string, fn: (data: T) => unknown) {
