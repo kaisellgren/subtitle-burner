@@ -1,12 +1,12 @@
 import { Cache } from './cache'
 import { SubtitleBurner } from './ffmpeg/subtitle-burner'
 import { promises as fs } from 'fs'
-import { $ } from 'zx'
-import { createDataUriThumbnail } from './ffmpeg/thumbnail'
+import { $, tempfile } from 'zx'
 import { sha256 } from './util/hash'
 import { basename, dirname, extname } from 'node:path'
 import { Subtitle, VideoInfo } from '../common/video-info'
 import { Logger } from './util/logger'
+import type { Buffer } from 'node:buffer'
 
 const logger = new Logger(import.meta.url)
 
@@ -46,7 +46,7 @@ export class VideoService {
 
       const durationInSeconds = Math.round(Number(info.format.duration))
 
-      const thumbnail = await createDataUriThumbnail(fullPath, durationInSeconds)
+      const thumbnail = await this.#createDataUriThumbnail(fullPath, durationInSeconds)
 
       const data = {
         id: sha256(fullPath),
@@ -86,6 +86,21 @@ export class VideoService {
 
   async stopBurningSubtitle(fullPath: string) {
     await this.#subtitleBurner.stop(fullPath)
+  }
+
+  async #createDataUriThumbnail(fullPath: string, videoDuration: number): Promise<string> {
+    const data = await this.#createThumbnail(fullPath, videoDuration)
+    return `data:image/avif;base64,${data.toString('base64')}`
+  }
+
+  async #createThumbnail(fullPath: string, videoDuration: number): Promise<Buffer> {
+    logger.debug(`Creating thumbnail for: ${fullPath}`)
+
+    const thumbnailFile = `${tempfile()}.avif`
+
+    await $`ffmpeg -ss ${Math.round(videoDuration / 2)} -noaccurate_seek -i ${fullPath} -read_ahead_limit 1 -skip_frame nokey -an -vf "thumbnail,scale=320:-1" -frames:v 1 -c:v libaom-av1 -crf 40 -still-picture 1 ${thumbnailFile}`.quiet()
+
+    return fs.readFile(thumbnailFile)
   }
 }
 
