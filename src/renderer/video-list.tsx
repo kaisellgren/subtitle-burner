@@ -75,7 +75,7 @@ const Thumbnail = styled.div`
   }
 `
 
-export function Videos({ apiClient, store }: Props) {
+export function VideoList({ apiClient, store }: Props) {
   const snap = useSnapshot(store)
 
   useEffect(() => {

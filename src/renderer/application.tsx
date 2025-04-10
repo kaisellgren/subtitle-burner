@@ -3,7 +3,7 @@ import { Button, LinearProgress, Paper, Tooltip, Typography } from '@mui/materia
 import styled from 'styled-components'
 import { DragAndDrop } from './components/drag-and-drop'
 import { VideoInfo } from '../common/video-info'
-import { Videos } from './videos'
+import { VideoList } from './video-list'
 import { Store } from './store'
 import AttachFileIcon from '@mui/icons-material/AttachFile'
 import FolderIcon from '@mui/icons-material/Folder'
@@ -142,7 +142,7 @@ export function Application({ store, apiClient }: { store: Store; apiClient: Api
       {isAddingFiles && <LinearProgress />}
 
       <ScrollContainer>
-        <Videos apiClient={apiClient} store={store} />
+        <VideoList apiClient={apiClient} store={store} />
       </ScrollContainer>
 
       <Footer>
