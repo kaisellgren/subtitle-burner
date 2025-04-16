@@ -11,15 +11,18 @@ import { Logger } from './util/logger'
 import { Notification } from 'electron'
 import { APP_ICON } from './os/app-icon'
 import { VideoInfo } from '../common/video-info'
+import { StateManager } from './state/state-manager'
 
 const logger = new Logger(import.meta.url)
 
 export class SubtitleBurner {
   #videosBeingBurned: Map<string, ProcessPromise> = new Map()
   #win: Electron.CrossProcessExports.BrowserWindow
+  #stateManager: StateManager
 
-  constructor(win: Electron.CrossProcessExports.BrowserWindow) {
+  constructor(win: Electron.CrossProcessExports.BrowserWindow, stateManager: StateManager) {
     this.#win = win
+    this.#stateManager = stateManager
   }
 
   async burn(fullPath: string, subtitleId: string, videoInfo: VideoInfo) {
@@ -39,10 +42,12 @@ export class SubtitleBurner {
       await fs.rm(outputFullPath)
     }
 
-    const bitrate = Math.min(videoInfo.bitRate, 5_000_000)
+    const maxBitrate = this.#stateManager.state.settings.maximumBitrate ?? 5_000_000
+    const bitrate = Math.min(videoInfo.bitRate, maxBitrate)
+    const encodingPreset = this.#stateManager.state.settings.encodingPreset ?? 'medium'
 
     const process =
-      $`ffmpeg -i ${fullPath} -vf subtitles=${subtitleFullPath} -c:v libx264 -b:v ${bitrate} -preset medium -movflags +faststart -crf 21 -tune film -c:a copy ${outputFullPath}`.quiet()
+      $`ffmpeg -i ${fullPath} -vf subtitles=${subtitleFullPath} -c:v libx264 -b:v ${bitrate} -preset ${encodingPreset} -movflags +faststart -crf 21 -tune film -c:a copy ${outputFullPath}`.quiet()
 
     this.#videosBeingBurned.set(fullPath, process)
 

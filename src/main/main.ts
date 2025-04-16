@@ -27,7 +27,7 @@ async function main() {
 
   const cache = new Cache()
   const fileService = new FileService(stateManager)
-  const subtitleBurner = new SubtitleBurner(win)
+  const subtitleBurner = new SubtitleBurner(win, stateManager)
   const videoService = new VideoService(cache, subtitleBurner)
 
   new Api(stateManager, videoService, fileService)
