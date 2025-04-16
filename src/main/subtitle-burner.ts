@@ -10,6 +10,7 @@ import { VideoBurnFailedEvent } from '../common/video-burn-failed-event'
 import { Logger } from './util/logger'
 import { Notification } from 'electron'
 import { APP_ICON } from './os/app-icon'
+import { VideoInfo } from '../common/video-info'
 
 const logger = new Logger(import.meta.url)
 
@@ -21,7 +22,7 @@ export class SubtitleBurner {
     this.#win = win
   }
 
-  async burn(fullPath: string, subtitleId: string, duration: number) {
+  async burn(fullPath: string, subtitleId: string, videoInfo: VideoInfo) {
     const id = sha256(fullPath)
 
     logger.info(`Starting to burn subtitle for video (${id}): ${fullPath}`)
@@ -38,8 +39,10 @@ export class SubtitleBurner {
       await fs.rm(outputFullPath)
     }
 
+    const bitrate = Math.min(videoInfo.bitRate, 5_000_000)
+
     const process =
-      $`ffmpeg -i ${fullPath} -vf subtitles=${subtitleFullPath} -c:v libx264 -b:v 5M -preset ultrafast -movflags +faststart -crf 21 -tune film -c:a copy ${outputFullPath}`.quiet()
+      $`ffmpeg -i ${fullPath} -vf subtitles=${subtitleFullPath} -c:v libx264 -b:v ${bitrate} -preset medium -movflags +faststart -crf 21 -tune film -c:a copy ${outputFullPath}`.quiet()
 
     this.#videosBeingBurned.set(fullPath, process)
 
@@ -51,7 +54,7 @@ export class SubtitleBurner {
         const [hours, minutes, seconds] = match[1].slice(0, 8).split(':').map(Number)
         const progressInSeconds = seconds + minutes * 60 + hours * 3600
 
-        const progressRate = Number((progressInSeconds / duration).toFixed(2))
+        const progressRate = Number((progressInSeconds / videoInfo.durationInSeconds).toFixed(2))
         const event: VideoBurnProgressEvent = { id: id, progressRate }
 
         this.#win.webContents.send('video-burn-progress', event)

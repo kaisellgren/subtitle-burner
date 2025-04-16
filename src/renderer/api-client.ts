@@ -51,7 +51,6 @@ export class ApiClient {
     const request: BurnSubtitleRequest = {
       fullPath: video.fullPath,
       subtitleId: expectNotNull(video.burnSettings.subtitleId, 'Expected subtitleId'),
-      duration: video.durationInSeconds,
     }
     video.burnStartedAt = new Date()
     video.burnFinishedAt = null

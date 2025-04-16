@@ -80,8 +80,9 @@ export class VideoService {
     })
   }
 
-  async burnSubtitle(fullPath: string, subtitleId: string, duration: number) {
-    await this.#subtitleBurner.burn(fullPath, subtitleId, duration)
+  async burnSubtitle(fullPath: string, subtitleId: string) {
+    const videoInfo = await this.getVideoInfo(fullPath)
+    await this.#subtitleBurner.burn(fullPath, subtitleId, videoInfo)
   }
 
   async stopBurningSubtitle(fullPath: string) {

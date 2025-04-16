@@ -16,7 +16,7 @@ export class Api {
     this.#registerApi('getSettings', () => stateManager.state.settings)
     this.#registerApi('getVideoInfo', (fullPath: string) => videoService.getVideoInfo(fullPath))
     this.#registerApi('burnSubtitle', (request: BurnSubtitleRequest) =>
-      videoService.burnSubtitle(request.fullPath, request.subtitleId, request.duration),
+      videoService.burnSubtitle(request.fullPath, request.subtitleId),
     )
     this.#registerApi('stopBurningSubtitle', (request: StopBurningSubtitleRequest) =>
       videoService.stopBurningSubtitle(request.fullPath),
