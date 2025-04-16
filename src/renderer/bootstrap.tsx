@@ -12,7 +12,7 @@ import '@fontsource/roboto/700.css'
 import { createStore } from './store'
 import { Settings } from '../common/settings'
 import { ApiClient } from './api-client'
-import { Preferences } from './preferences'
+import { Preferences } from './preferences/preferences'
 
 interface Props {
   apiClient: ApiClient
