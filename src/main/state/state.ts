@@ -21,5 +21,7 @@ export const STATE_DEFAULT: State = {
   },
   settings: {
     preferredLanguages: [],
+    encodingPreset: 'medium',
+    maximumBitrate: 5_000_000,
   },
 }

@@ -6,6 +6,7 @@ import styled from 'styled-components'
 import SubtitlesIcon from '@mui/icons-material/Subtitles'
 import VideoSettingsIcon from '@mui/icons-material/VideoSettings'
 import { SubtitlePreferences } from './subtitle-preferences'
+import { EncodingPreferences } from './encoding-preferences'
 
 const Container = styled.div`
   display: flex;
@@ -43,7 +44,7 @@ const Content = styled.div`
 `
 
 export function Preferences({ store, apiClient }: { store: Store; apiClient: ApiClient }): ReactElement {
-  const [page, setPage] = useState('subtitles')
+  const [page, setPage] = useState('encoding')
 
   document.title = 'Preferences'
 
@@ -57,13 +58,13 @@ export function Preferences({ store, apiClient }: { store: Store; apiClient: Api
       <NavAndContent>
         <Nav>
           <List>
-            <ListItemButton onClick={() => setPage('encoding')}>
+            <ListItemButton selected={page == 'encoding'} onClick={() => setPage('encoding')}>
               <ListItemIcon>
                 <VideoSettingsIcon />
               </ListItemIcon>
               <ListItemText>Encoding</ListItemText>
             </ListItemButton>
-            <ListItemButton onClick={() => setPage('subtitles')}>
+            <ListItemButton selected={page == 'subtitles'} onClick={() => setPage('subtitles')}>
               <ListItemIcon>
                 <SubtitlesIcon />
               </ListItemIcon>
@@ -71,7 +72,10 @@ export function Preferences({ store, apiClient }: { store: Store; apiClient: Api
             </ListItemButton>
           </List>
         </Nav>
-        <Content>{page == 'subtitles' && <SubtitlePreferences store={store} />}</Content>
+        <Content>
+          {page == 'subtitles' && <SubtitlePreferences store={store} />}
+          {page == 'encoding' && <EncodingPreferences store={store} />}
+        </Content>
       </NavAndContent>
       <BottomToolbar>
         <Button variant="contained" onClick={onSave}>
