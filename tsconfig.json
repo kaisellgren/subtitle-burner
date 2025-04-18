@@ -11,7 +11,7 @@
     "esModuleInterop": true,
     "exactOptionalPropertyTypes": false,
     "noUncheckedIndexedAccess": true,
-    "noImplicitOverride": true,
+    "noImplicitOverride": false,
     "noPropertyAccessFromIndexSignature": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
@@ -27,7 +27,8 @@
     "jsx": "react",
     "types": [
       "node",
-      "electron"
+      "electron",
+      "jest"
     ],
     "paths": {
       "@mui/styled-engine": [
@@ -40,7 +41,8 @@
     "src/main/main.ts",
     "src/preload/preload.ts",
     "src/renderer/styles/styled.d.ts",
-    "src/renderer/renderer.tsx"
+    "src/renderer/renderer.tsx",
+    "src/test/**.ts"
   ],
   "exclude": [
     "node_modules",
