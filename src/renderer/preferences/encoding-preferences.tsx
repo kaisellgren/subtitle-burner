@@ -23,24 +23,25 @@ export function EncodingPreferences({ store }: Props) {
     <Stack spacing={2}>
       <FormControl>
         <TextField
+          sx={{ width: '15rem' }}
           id="outlined-number"
           label="Maximum bitrate"
-          type="number"
           slotProps={{
             inputLabel: {
               shrink: true,
             },
             input: {
-              endAdornment: <InputAdornment position="start">bytes/s</InputAdornment>,
+              endAdornment: <InputAdornment position="start">kB/s</InputAdornment>,
             },
           }}
-          value={snap.settings.maximumBitrate}
+          value={Math.round(snap.settings.maximumBitrate / 1000)}
           onChange={(e) => {
-            store.settings.maximumBitrate = Number(e.target.value)
+            const rawValue = e.target.value.replace(/\D/g, '')
+            store.settings.maximumBitrate = Number(rawValue) * 1000
           }}
         />
         <FormHelperText>
-          Higher bitrate means higher quality, but could cause buffering. Default is 5 000 000.
+          Higher bitrate means higher quality, but could cause buffering. Default is 5 000 kB/s.
         </FormHelperText>
       </FormControl>
 
