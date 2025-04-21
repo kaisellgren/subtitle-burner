@@ -2,7 +2,7 @@ import { readdir } from 'node:fs/promises'
 import path from 'node:path'
 import { toError } from '../../common/util/error'
 
-export async function findFiles(fullPath: string, extensions: string[]) {
+export async function findFiles(fullPath: string, extensions: string[], recursive = true) {
   let results: string[] = []
 
   try {
@@ -11,7 +11,7 @@ export async function findFiles(fullPath: string, extensions: string[]) {
     for (const item of items) {
       const itemPath = path.join(fullPath, item.name)
 
-      if (item.isDirectory()) {
+      if (item.isDirectory() && recursive) {
         const subDirFiles = await findFiles(itemPath, extensions)
         results = results.concat(subDirFiles)
       } else if (item.isFile()) {

@@ -25,14 +25,16 @@ export class SubtitleBurner {
     this.#stateManager = stateManager
   }
 
-  async burn(fullPath: string, subtitleId: string, videoInfo: VideoInfo) {
+  async burn(fullPath: string, subtitlePathOrIndex: string | number, videoInfo: VideoInfo) {
     const id = sha256(fullPath)
 
     logger.info(`Starting to burn subtitle for video (${id}): ${fullPath}`)
 
-    const subtitleIndex = Number(subtitleId)
+    const subtitleFullPath =
+      typeof subtitlePathOrIndex == 'string'
+        ? await this.#copySubtitleToTempFile(subtitlePathOrIndex)
+        : await this.#extractSubtitleToTempFile(fullPath, subtitlePathOrIndex)
 
-    const subtitleFullPath = await this.#extractSubtitleToTempFile(fullPath, subtitleIndex)
     const outputFullPath = `${dirname(fullPath)}/(burned) ${sanitizeFilenameForFfmpeg(basename(fullPath))}`
 
     logger.info(`Target file path: ${outputFullPath}`)
@@ -117,6 +119,12 @@ export class SubtitleBurner {
     logger.info(`Extracting subtitle from: ${fullPath}`)
     await $`ffmpeg -i ${fullPath} -map 0:s:${subtitleIndex} ${tempFile}`.quiet()
     logger.info(`Subtitle extracted to: ${tempFile}`)
+    return tempFile
+  }
+
+  async #copySubtitleToTempFile(fullPath: string): Promise<string> {
+    const tempFile = createTempFilename('subtitle', '.srt')
+    await fs.copyFile(fullPath, tempFile)
     return tempFile
   }
 }

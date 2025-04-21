@@ -2,6 +2,8 @@ export interface Subtitle {
   id: string
   language: string
   title: string
+  fullPath?: string
+  index?: number
 }
 
 export interface VideoInfo {

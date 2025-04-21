@@ -48,9 +48,14 @@ export class ApiClient {
   }
 
   async burnSubtitle(video: Video): Promise<void> {
+    const subtitleId = expectNotNull(video.burnSettings.subtitleId, 'Expected subtitleId')
+    const subtitle = expectNotNull(
+      video.subtitles.find((x) => x.id == subtitleId),
+      'Expected subtitle',
+    )
     const request: BurnSubtitleRequest = {
       fullPath: video.fullPath,
-      subtitleId: expectNotNull(video.burnSettings.subtitleId, 'Expected subtitleId'),
+      subtitlePathOrIndex: expectNotNull(subtitle.fullPath ?? subtitle.index, 'Expected either index or fullPath'),
     }
     video.burnStartedAt = new Date()
     video.burnFinishedAt = null

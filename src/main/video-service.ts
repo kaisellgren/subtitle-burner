@@ -7,6 +7,7 @@ import { basename, dirname, extname } from 'node:path'
 import { Subtitle, VideoInfo } from '../common/video-info'
 import { Logger } from './util/logger'
 import type { Buffer } from 'node:buffer'
+import { findSubtitleFilesForVideo } from './util/subtitle-file-finder'
 
 const logger = new Logger(import.meta.url)
 
@@ -44,6 +45,19 @@ export class VideoService {
 
       const subTracks = info.streams.filter((x: any) => x.codec_type == 'subtitle')
 
+      const subtitles: Subtitle[] = subTracks.map((x: any, i: number): Subtitle => {
+        return {
+          id: String(i),
+          index: i,
+          language: x.tags.language,
+          title: x.tags.title,
+        }
+      })
+
+      if (subtitles.length == 0) {
+        subtitles.push(...(await findSubtitleFilesForVideo(fullPath)))
+      }
+
       const durationInSeconds = Math.round(Number(info.format.duration))
 
       const thumbnail = await this.#createDataUriThumbnail(fullPath, durationInSeconds)
@@ -65,13 +79,7 @@ export class VideoService {
         height: videoTrack.height,
         aspectRatio: videoTrack.display_aspect_ratio,
         thumbnail: thumbnail,
-        subtitles: subTracks.map((x: any, i: number): Subtitle => {
-          return {
-            id: String(i),
-            language: x.tags.language,
-            title: x.tags.title,
-          }
-        }),
+        subtitles,
       }
 
       logger.debug(`Returning video info: ${JSON.stringify(data)}`)
@@ -80,9 +88,9 @@ export class VideoService {
     })
   }
 
-  async burnSubtitle(fullPath: string, subtitleId: string) {
+  async burnSubtitle(fullPath: string, subtitlePathOrIndex: string | number) {
     const videoInfo = await this.getVideoInfo(fullPath)
-    await this.#subtitleBurner.burn(fullPath, subtitleId, videoInfo)
+    await this.#subtitleBurner.burn(fullPath, subtitlePathOrIndex, videoInfo)
   }
 
   async stopBurningSubtitle(fullPath: string) {
