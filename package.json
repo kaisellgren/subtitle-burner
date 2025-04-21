@@ -10,7 +10,8 @@
   "type": "commonjs",
   "scripts": {
     "build": "NODE_ENV=production rspack build",
-    "package": "electron-builder --linux",
+    "package": "electron-builder --linux --config electron-builder.config.js",
+    "package:debug": "DEBUG=electron-builder,flatpak-bundler npm run package",
     "start": "NODE_OPTIONS='' electron dist/main/main.js -- --no-sandbox",
     "serve:frontend": "rspack serve",
     "watch:backend": "rspack build -w",
@@ -18,51 +19,6 @@
     "tsc": "tsc --noEmit",
     "test:debug": "DEBUG=pw:browser* jest",
     "test": "jest"
-  },
-  "build": {
-    "appId": "com.kaisellgren.subtitleburner",
-    "productName": "Subtitle Burner",
-    "linux": {
-      "target": [
-        "deb"
-      ],
-      "category": "Utility",
-      "icon": "src/assets/icons/icon-256x256.png"
-    },
-    "deb": {
-      "depends": [
-        "ffmpeg",
-        "libgtk-3-0",
-        "libnotify4",
-        "libxapp1",
-        "libnss3",
-        "libxss1",
-        "libxtst6",
-        "xdg-utils",
-        "libatspi2.0-0",
-        "libuuid1",
-        "libsecret-1-0",
-        "libasound2"
-      ]
-    },
-    "files": [
-      "dist/main/**/*",
-      "dist/preload/**/*",
-      "dist/renderer/**/*",
-      "dist/assets/**/*",
-      "package.json"
-    ],
-    "extraFiles": [
-      {
-        "from": "screenshots/screenshot.jpg",
-        "to": "usr/share/doc/subtitle-burner/screenshot.jpg"
-      },
-      {
-        "from": "src/assets/appstream/appdata.xml",
-        "to": "usr/share/metainfo/com.kaisellgren.subtitleburner.appdata.xml"
-      }
-    ],
-    "asar": true
   },
   "dependencies": {
     "@fontsource/roboto": "^5.1.1",
