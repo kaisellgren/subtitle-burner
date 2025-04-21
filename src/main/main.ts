@@ -12,6 +12,8 @@ import { createMainWindow } from './os/main-window'
 
 const logger = new Logger(import.meta.url)
 
+logger.debug('Environment: ' + JSON.stringify(process.env))
+
 async function main() {
   logger.info('Starting application')
 
