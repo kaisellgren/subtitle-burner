@@ -1,6 +1,6 @@
 {
   "name": "subtitle-burner",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "Kai Sellgren <kaisellgren@gmail.com>",
   "description": "Burn subtitles onto video files. This makes it easier to Chromecast videos with subtitles.",
   "homepage": "https://github.com/kaisellgren/subtitle-burner",
