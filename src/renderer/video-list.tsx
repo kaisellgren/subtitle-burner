@@ -27,6 +27,7 @@ import { Flex } from './components/styled/flex'
 import ClearIcon from '@mui/icons-material/Clear'
 import StopCircleIcon from '@mui/icons-material/StopCircle'
 import { ApiClient } from './api-client'
+import { playErrorSound, playSuccessSound } from './util/sound'
 
 interface Props {
   apiClient: ApiClient
@@ -77,13 +78,13 @@ const Thumbnail = styled.div`
 
 export function VideoList({ apiClient, store }: Props) {
   const snap = useSnapshot(store)
-
   useEffect(() => {
     apiClient.onVideoBurned((event: VideoBurnedEvent) => {
       const video = store.videos.find((x) => x.id == event.id)
       if (video) {
         video.burnProgressRate = 1
         video.burnFinishedAt = new Date()
+        playSuccessSound()
       }
     })
 
@@ -93,6 +94,7 @@ export function VideoList({ apiClient, store }: Props) {
         video.burnProgressRate = 0
         video.burnFailedAt = new Date()
         video.burnError = event.error
+        playErrorSound()
       }
     })
 
