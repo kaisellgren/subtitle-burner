@@ -79,7 +79,7 @@ export function Application({ store, apiClient }: { store: Store; apiClient: Api
           subtitleId = videoInfo.subtitles.find((s) => s.language == lang)?.id ?? null
         }
       }
-      video.burnSettings.subtitleId = subtitleId
+      video.burnSettings.subtitleId = subtitleId ?? videoInfo.subtitles[0]?.id ?? null
 
       store.videos.push(video)
     }
