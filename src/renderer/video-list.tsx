@@ -247,7 +247,7 @@ function VideoBlock({ apiClient, video: x, store }: VideoBlockProps): ReactEleme
                 {x.subtitles.map((subtitle, i) => (
                   <MenuItem value={subtitle.id} key={i}>
                     <span>
-                      {subtitle.title} ({subtitle.language})
+                      {subtitle.title} {subtitle.language ? `(${subtitle.language})` : ''}
                     </span>
                   </MenuItem>
                 ))}
