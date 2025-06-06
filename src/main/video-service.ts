@@ -50,7 +50,7 @@ export class VideoService {
           id: String(i),
           index: i,
           language: x.tags.language,
-          title: x.tags.title,
+          title: x.tags.title ?? `Track ${i + 1}`,
         }
       })
 
