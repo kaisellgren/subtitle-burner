@@ -3,10 +3,7 @@ module.exports = {
   appId: 'com.kaisellgren.subtitleburner',
   productName: 'Subtitle Burner',
   linux: {
-    target: [
-      'deb',
-      'tar.gz',
-    ],
+    target: ['deb', 'pacman', 'tar.gz'],
     executableName: 'subtitle-burner',
     category: 'Utility',
     icon: 'src/assets/icons/icon-256x256.png',
