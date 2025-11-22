@@ -43,7 +43,8 @@ export class VideoService {
 
       logger.debug(`Found video track: ${JSON.stringify(videoTrack)}`)
 
-      const subTracks = info.streams.filter((x: any) => x.codec_type == 'subtitle')
+      const bitmapSubtitleFormats = ['dvd_subtitle', 'dvdsub', 'hdmv_pgs_subtitle', 'dvb_subtitle', 'xsub', 'pgssub']
+      const subTracks = info.streams.filter((x: any) => x.codec_type == 'subtitle' &&  !bitmapSubtitleFormats.includes(x.codec_name))
 
       const subtitles: Subtitle[] = subTracks.map((x: any, i: number): Subtitle => {
         return {
