@@ -9,5 +9,15 @@ so that subtitles can be seen regardless of which player you are using.
 
 Packages will be provided later.
 
+### Arch
+
+Local builds can be installed:
+
+```
+npm run build
+npm run package
+sudo pacman -U ./dist/subtitle-burner-1.01.pacman
+```
+
 ## Screenshots
 ![Screenshot](https://raw.githubusercontent.com/kaisellgren/subtitle-burner/refs/heads/main/screenshots/screenshot.jpg)
